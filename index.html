@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <title>Ping Pong Tournament</title>
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,700" rel="stylesheet">
+  </head>
+  <body>
+    <img id="backgroundImage" src="./PingPong.jpg"/>
+    <div id="backgroundOverlay"></div>
+    <div id="mainPage">
+      <div id="leaderBoard">
+        <a id="signupButton" href="#" class="button">Sign up</a>
+        <table>
+          <thead>
+            <tr>
+              <td>Name</td>
+              <td>Charity</td>
+              <td># of bets</td>
+              <td>Wins</td>
+              <td>Losses</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ichiko</td>
+              <td>Doctors Without Borders</td>
+              <td>290</td>
+              <td>7</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td>Futaro</td>
+              <td>UNICEF</td>
+              <td>0</td>
+              <td>5</td>
+              <td>2</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <form id="currentMatch">
+        <h3 id="currentLabel">Currently playing:</h3>
+        <table>
+          <thead>
+            <tr>
+              <td id="playerB">
+                <h1>Chris Johnson</h1>
+              </td>
+              <td>
+                vs
+              </td>
+              <td id="playerB">
+                <h1>Greg Jones</h1>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <input id="scoreA" name="scoreA" type="number"/>
+              </td>
+              <td></td>
+              <td>
+                <input id="scoreB" name="scoreB" type="number"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <a href="#" id="submitScoreButton" class="button">Submit Final Score</a>
+      </form>
+      <div id="calendar">
+        <div>TODO: editable google calendar showing all scheduled matches</div>
+      </div>
+    </div>
+    <div id="registrationScreen">
+      <form>
+        <span><label for="name">Your name:</label><input name="name", id="name"/></span>
+        <span><label for="email">Your email address:</label><input name="email", id="email"/></span>
+        <span><input name="playOrBet" id="willPlay" value="willPlay" type="radio" checked/><label for="willPlay">I want to play</label></span>
+        <span><input name="playOrBet" id="willBet" value="willBet" type="radio"/><label for="willBet">I want to bet</label></span>
+        <span id="playCharitySelector">
+          <label for="charity">The EIN of the non-profit you'll be playing for:</label>
+          <input name="charity", id="charity" type="number"/>
+          <select id="charitySelector">
+            <option disabled selected>Charities others have added:</option>
+            <option>Find another non-profit...</option>
+          </select>
+        </span>
+        <div id="availability">
+          <div>TODO: interface for specifying availability</div>
+        </div>
+        <span id="betSelector">
+          <label for="bet">Enter the player's name that you want to bet on:</label>
+          <input name="bet", id="bet"/>
+          <select id="betSelector">
+            <option disabled selected>Currently enrolled players / charities:</option>
+          </select>
+        </span>
+        <div>Please drop the amount you want to donate / bet in the box by the table (if we've locked it away,
+          please find a BruSCI member).</div>
+      </form>
+      <a href="#" class="close button">x</a>
+    </div>
+  </body>
+</html>

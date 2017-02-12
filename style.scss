@@ -1,0 +1,127 @@
+@import './colors.scss';
+
+body {
+  font-family: "Josefin Sans", sans-serif;
+  font-weight: 300;
+  color: $textColor;
+  background-color: black;
+}
+input {
+  font-family: "Josefin Sans", sans-serif;
+}
+h1, h2, h3, h4, h5, h6, b {
+  font-weight: 700;
+}
+a {
+  text-decoration: none;
+  color: $linkColor;
+}
+a.button {
+  border-radius: 1em;
+  padding: 1em;
+  background-color: $uiAccentColor;
+  color: $lightUiColor;
+  cursor: pointer;
+  text-align: center;
+}
+a.button:hover {
+  background-color: $lightUiColor;
+  color: $darkUiColor;
+}
+
+#backgroundImage {
+  position: fixed;
+  bottom: -256px;
+  right: -256px;
+}
+#backgroundOverlay {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  background: radial-gradient(ellipse 1024px 512px at 100% 100%, rgba(0,0,0,0.3) 0px, black 1536px);
+}
+#mainPage {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  display: flex;
+
+  > * {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+  }
+
+  #leaderBoard {
+    overflow-y: scroll;
+
+    table {
+      margin-top: 1em;
+      border-collapse: collapse;
+
+      thead td {
+        border: 1px solid $lightUiColor;
+        background-color: $darkUiColor;
+        color: $lightUiColor;
+      }
+
+      td {
+        white-space: nowrap;
+        padding: 0.25em;
+      }
+    }
+  }
+
+  #currentMatch {
+    text-align: center;
+    justify-content: center;
+
+    table {
+      margin-bottom: 1em;
+
+      td {
+        padding: 0.25em;
+
+        input {
+          font-size: 3em;
+          text-align: center;
+          width: 2em;
+        }
+      }
+    }
+  }
+}
+#registrationScreen {
+  position: absolute;
+  top: 10em;
+  bottom: 10em;
+  width: 50em;
+  left: calc(50% - 25em);
+  border: 1px solid $lightUiColor;
+  border-radius: 3em;
+  background-color: rgba($darkUiColor, 0.95);
+  padding: 3em;
+
+  form {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  .close {
+    position: absolute;
+    top: 2em;
+    right: 2em;
+    border-radius: 2em;
+    padding: .5em;
+    width: 1em;
+    height: 1em;
+    text-align: center;
+  }
+}

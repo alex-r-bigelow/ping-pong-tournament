@@ -1,0 +1,30 @@
+@import './colors.scss';
+
+::-webkit-scrollbar {
+    width: 1em;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background-color: transparent;
+    border: 1px solid $Black;
+}
+
+/* Corner */
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+    border: 1px solid $Black;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 1em;
+    border-radius: 1em;
+    background: $uiAccentColor;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: $lightUiColor;
+}
+::-webkit-scrollbar-thumb:window-inactive {
+	background: $uiAccentColor;
+}
