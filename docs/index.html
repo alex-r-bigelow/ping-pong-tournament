@@ -44,13 +44,13 @@
         <table>
           <thead>
             <tr>
-              <td id="playerB">
+              <td id="currentPlayerA">
                 <h1>Chris Johnson</h1>
               </td>
               <td>
                 vs
               </td>
-              <td id="playerB">
+              <td id="currentPlayerB">
                 <h1>Greg Jones</h1>
               </td>
             </tr>
@@ -69,37 +69,57 @@
         </table>
         <a href="#" id="submitScoreButton" class="button">Submit Final Score</a>
       </form>
+      <hr/>
       <div id="calendar">
-        <div>TODO: editable google calendar showing all scheduled matches</div>
+        <div>TODO: show google calendar listing all scheduled matches</div>
+        <div id="scheduler">
+          <ul id="playerA" class="selectMenu"></ul>
+          <p>vs</p>
+          <ul id="playerB" class="selectMenu"></ul>
+          <input type="datetime-local"/>
+          <a href="#" id="scheduleMatchButton" class="button">Schedule a match</a>
+        </div>
       </div>
     </div>
     <div id="registrationScreen">
       <form>
-        <span><label for="name">Your name:</label><input name="name", id="name"/></span>
-        <span><label for="email">Your email address:</label><input name="email", id="email"/></span>
-        <span><input name="playOrBet" id="willPlay" value="willPlay" type="radio" checked/><label for="willPlay">I want to play</label></span>
-        <span><input name="playOrBet" id="willBet" value="willBet" type="radio"/><label for="willBet">I want to bet</label></span>
-        <span id="playCharitySelector">
-          <label for="charity">The EIN of the non-profit you'll be playing for:</label>
-          <input name="charity", id="charity" type="number"/>
-          <select id="charitySelector">
-            <option disabled selected>Charities others have added:</option>
-            <option>Find another non-profit...</option>
-          </select>
+        <p>This is a <b>donate-to-play</b> tournament. If you don't want to play, you can still
+          bet a donation on a particular player. The non-profit selected by the winner of the
+          tournament will recieve all donations / bets.
+        </p>
+        <p>
+          We're doing this on the honor system; please drop at least $1 in the box by the table
+          (if we've locked it away, please find a BruSCI member).
+        </p>
+        <span>
+          <label for="name">Your name:</label>
+          <input name="name", id="name"/>
         </span>
-        <div id="availability">
-          <div>TODO: interface for specifying availability</div>
-        </div>
+        <span>
+          <input name="playOrBet" id="willPlay" value="willPlay" type="radio" checked/>
+          <label for="willPlay">I want to play</label>
+        </span>
+        <span>
+          <input name="playOrBet" id="willBet" value="willBet" type="radio"/>
+          <label for="willBet">I want to bet</label>
+        </span>
+        <span class="charityElement">
+          <label for="charity">The 501(c)(3) non-profit you'll be playing for:</label>
+          <input name="charity", id="charity" list="charityList"/>
+          <datalist id="charityList">
+          </dataList>
+        </span>
         <span id="betSelector">
-          <label for="bet">Enter the player's name that you want to bet on:</label>
-          <input name="bet", id="bet"/>
-          <select id="betSelector">
-            <option disabled selected>Currently enrolled players / charities:</option>
-          </select>
+          <label>Pick the player that you want to bet on:</label>
+          <ul id="bet" class="selectMenu">
+          </ul>
         </span>
-        <div>Please drop the amount you want to donate / bet in the box by the table (if we've locked it away,
-          please find a BruSCI member).</div>
       </form>
+      <div id="footer">
+        <a id="finishSignupButton" class="button">Sign up</a>
+        <a id="calendarSyncButton" class="charityElement button">Connect</a>
+        <label class="charityElement">Connect your Google calendar for easier match scheduling (optional):</label>
+      </div>
       <a href="#" class="close button">x</a>
     </div>
   <script type="text/javascript" src="webpack-bundle.js"></script></body>

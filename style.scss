@@ -1,4 +1,5 @@
 @import './colors.scss';
+@import './lib/scrollbars.scss';
 
 body {
   font-family: "Josefin Sans", sans-serif;
@@ -8,25 +9,24 @@ body {
 }
 input {
   font-family: "Josefin Sans", sans-serif;
+  font-size: 2em;
+  background-color: $lightUiColor;
+  color: $darkUiColor;
+  border: 1px solid $Black;
+  outline: none;
+}
+input:focus {
+  border-color: $uiAccentColor;
 }
 h1, h2, h3, h4, h5, h6, b {
   font-weight: 700;
 }
+b {
+  color: $uiAccentColor;
+}
 a {
   text-decoration: none;
   color: $linkColor;
-}
-a.button {
-  border-radius: 1em;
-  padding: 1em;
-  background-color: $uiAccentColor;
-  color: $lightUiColor;
-  cursor: pointer;
-  text-align: center;
-}
-a.button:hover {
-  background-color: $lightUiColor;
-  color: $darkUiColor;
 }
 
 #backgroundImage {
@@ -48,19 +48,22 @@ a.button:hover {
   right: 0px;
   bottom: 0px;
   left: 0px;
-  display: flex;
 
-  > * {
+  #leaderBoard {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    width: calc(33.33333333% - 2em);
     display: flex;
     flex-direction: column;
     padding: 1em;
-  }
-
-  #leaderBoard {
     overflow-y: scroll;
 
     table {
       margin-top: 1em;
+      margin-left: auto;
+      margin-right: auto;
       border-collapse: collapse;
 
       thead td {
@@ -77,11 +80,21 @@ a.button:hover {
   }
 
   #currentMatch {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: calc(66.66666666% - 2em);
+    height: calc(50% - 2em);
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
     text-align: center;
     justify-content: center;
 
     table {
       margin-bottom: 1em;
+      margin-left: auto;
+      margin-right: auto;
 
       td {
         padding: 0.25em;
@@ -94,24 +107,84 @@ a.button:hover {
       }
     }
   }
+
+  hr {
+    position: absolute;
+    top: calc(50% - 0.5em);
+    height: 1em;
+    left: 33.33333333%;
+    right: 0px;
+    background-color: transparent;
+    border: 1px solid $Black;
+  }
+
+  #calendar {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: calc(66.66666666% - 2em);
+    height: calc(50% - 2em);
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    #scheduler {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1em;
+      align-items: center;
+    }
+  }
 }
 #registrationScreen {
   position: absolute;
   top: 10em;
-  bottom: 10em;
-  width: 50em;
-  left: calc(50% - 25em);
+  height: 22em;
+  width: 40em;
+  left: calc(50% - 20em);
   border: 1px solid $lightUiColor;
   border-radius: 3em;
   background-color: rgba($darkUiColor, 0.95);
-  padding: 3em;
+  padding: 4em 3em 3em 3em;
 
   form {
-    display: flex;
     width: 100%;
-    height: 100%;
-    flex-direction: column;
-    justify-content: space-around;
+
+    > span {
+      position: relative;
+      width: 100%;
+      display: block;
+      height: 3em;
+
+      label {
+        position: absolute;
+        text-align: right;
+        right: 22em;
+        bottom: 1.35em;
+      }
+      input {
+        position: absolute;
+        right: 0em;
+        width: 10.5em;
+        &[type=radio] {
+          bottom: 0.6em;
+        }
+      }
+      ul.selectMenu {
+        position: relative;
+        display: inline-block;
+        left: calc(19em - 4px);
+        top: -1.4em;
+        /* cant position the select menu absolutely; instead I manually set this location */
+      }
+    }
+  }
+  #footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row-reverse;
   }
 
   .close {
@@ -123,5 +196,19 @@ a.button:hover {
     width: 1em;
     height: 1em;
     text-align: center;
+  }
+}
+
+.selectMenu li {
+  span.name {
+    display: block;
+    width: auto;
+    height: auto;
+  }
+  span.charity {
+    display: block;
+    width: auto;
+    height: auto;
+    font-size: 0.5em;
   }
 }
