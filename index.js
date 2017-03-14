@@ -1,44 +1,39 @@
 import * as d3 from 'd3';
-import jQuery from 'jquery';
 
 import './style/style.scss';
 import makeSelectMenu from './style/makeSelectMenu';
 import utahCharities from './utahCharities.csv';
 
-let ANIMATION_SPEED = 1000;
-let GOOGLE_API_KEY = 'AIzaSyB4PhN3YiK4yubSYqNwOY9uIWs4TY0ktAs';
-let BASE_URL = 'https://sheets.googleapis.com/v4/spreadsheets/';
-let SPREADSHEET_ID = '1xplN0dfgYruhL8IuG0T8TyrsBOXM-He9sQK075b-tR0';
+import googleSheetsFakeDb from './googleSheetsFakeDb';
 
-function hideRegistration (animate) {
-  let registrationScreen = d3.select('#registrationScreen');
-  if (animate) {
-    registrationScreen = registrationScreen.transition(ANIMATION_SPEED);
-  }
-  registrationScreen
-    .style('opacity', 0);
-  registrationScreen.transition()
-    .style('display', 'none');
-}
-
-function showRegistration (animate) {
-  let registrationScreen = d3.select('#registrationScreen')
-    .style('display', null);
-  if (animate) {
-    registrationScreen = registrationScreen.transition(ANIMATION_SPEED);
-  }
-  registrationScreen
-    .style('opacity', 1);
-}
+// const ANIMATION_SPEED = 1000;
 
 function updatePlayOrBet () {
   if (d3.select('#willPlay').property('checked')) {
-    d3.selectAll('.charityElement').style('display', null);
-    d3.select('#betSelector').style('display', 'none');
+    d3.select('#signupForm').style('display', null);
+    d3.select('#betForm').style('display', 'none');
   } else {
-    d3.selectAll('.charityElement').style('display', 'none');
-    d3.select('#betSelector').style('display', null);
+    d3.selectAll('#signupForm').style('display', 'none');
+    d3.select('#betForm').style('display', null);
   }
+}
+
+function setupSignInScreen () {
+  d3.selectAll('#willPlay, #willBet').on('change', () => {
+    updatePlayOrBet();
+  });
+  updatePlayOrBet();
+
+  d3.select('#signupButton').on('click', function () {
+    // TODO: validate that the input is valid
+    googleSheetsFakeDb.submitForm('Players', this.parentElement.parentElement);
+    // TODO: re-render everything when the promise resolves
+  });
+  d3.select('#betButton').on('click', function () {
+    // TODO: validate that the input is valid
+    googleSheetsFakeDb.submitForm('Bets', this.parentElement.parentElement);
+    // TODO: re-render everything when the promise resolves
+  });
 }
 
 function populateCharityList () {
@@ -72,7 +67,7 @@ function populatePlayerLists () {
     }
   ];
 
-  ['#playerA', '#playerB', '#bet'].forEach(containerSelector => {
+  ['#bet'].forEach(containerSelector => {
     let container = d3.select(containerSelector);
     let options = container.selectAll('li').data(dummyData);
     let optionsEnter = options.enter().append('li');
@@ -83,6 +78,7 @@ function populatePlayerLists () {
     options = options.merge(optionsEnter);
 
     options.attr('id', d => d.name)
+      .attr('value', d => d.name)
       .attr('class', d => d.name === 'Choose a Player' ? 'selected' : null);
     options.select('.name')
       .text(d => d.name);
@@ -93,24 +89,10 @@ function populatePlayerLists () {
   });
 }
 
-function setup () {
-  d3.select('#signupButton').on('click', () => {
-    showRegistration(true);
-  });
-  d3.select('#registrationScreen .close.button').on('click', () => {
-    hideRegistration(true);
-  });
-  d3.selectAll('#willPlay, #willBet').on('change', () => {
-    updatePlayOrBet();
-  });
-  updatePlayOrBet();
-  hideRegistration(false);
-}
-
 function delayedSetup () {
+  setupSignInScreen();
   populateCharityList();
   populatePlayerLists();
 }
 
-setup();
 window.onload = delayedSetup;

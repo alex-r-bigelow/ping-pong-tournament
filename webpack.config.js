@@ -28,7 +28,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.htaccess$|\.csv$/,
+        test: /\.htaccess$|\.csv$|\.ttf$|\.eot$|\.woff$|\.woff2$/,
         loader: 'file-loader',
         options: {
           name: '[name].[ext]'
@@ -75,10 +75,6 @@ module.exports = {
         query: {
           presets: ['es2015']
         }
-      },
-      {
-        test: /\.ttf$|\.eot$|\.woff$|\.woff2$/,
-        loader: 'file-loader'
       }
     ]
   },
