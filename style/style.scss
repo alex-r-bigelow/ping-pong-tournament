@@ -1,14 +1,21 @@
 @import './colors.scss';
-@import './lib/scrollbars.scss';
+@import './scrollbars.scss';
+
+@font-face {
+    font-family: 'Wolf-Sans-Regular';
+    src:url('./Wolf-Sans-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 
 body {
-  font-family: "Josefin Sans", sans-serif;
+  font-family: "Wolf-Sans-Regular", sans-serif;
   font-weight: 300;
   color: $textColor;
   background-color: black;
 }
 input {
-  font-family: "Josefin Sans", sans-serif;
+  font-family: "Wolf-Sans-Regular", sans-serif;
   font-size: 2em;
   background-color: $lightUiColor;
   color: $darkUiColor;

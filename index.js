@@ -1,9 +1,14 @@
 import * as d3 from 'd3';
-import './style.scss';
-import makeSelectMenu from './lib/makeSelectMenu';
+import jQuery from 'jquery';
+
+import './style/style.scss';
+import makeSelectMenu from './style/makeSelectMenu';
 import utahCharities from './utahCharities.csv';
 
 let ANIMATION_SPEED = 1000;
+let GOOGLE_API_KEY = 'AIzaSyB4PhN3YiK4yubSYqNwOY9uIWs4TY0ktAs';
+let BASE_URL = 'https://sheets.googleapis.com/v4/spreadsheets/';
+let SPREADSHEET_ID = '1xplN0dfgYruhL8IuG0T8TyrsBOXM-He9sQK075b-tR0';
 
 function hideRegistration (animate) {
   let registrationScreen = d3.select('#registrationScreen');

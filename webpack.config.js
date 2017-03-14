@@ -29,7 +29,10 @@ module.exports = {
     rules: [
       {
         test: /\.htaccess$|\.csv$/,
-        loader: 'file-loader'
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]'
+        }
       },
       {
         test: /\.scss$/,
@@ -51,7 +54,7 @@ module.exports = {
         loader: 'html-loader?attrs=img:src'
       },
       {
-        test: /\.jpe?g$|\.gif$|\.png$|(?!template\b)\b\w+\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/,
+        test: /\.jpe?g$|\.gif$|\.png$|(?!template\b)\b\w+\.svg$|\.wav$|\.mp3$/,
         loader: 'url-loader'
       },
       {
@@ -72,6 +75,10 @@ module.exports = {
         query: {
           presets: ['es2015']
         }
+      },
+      {
+        test: /\.ttf$|\.eot$|\.woff$|\.woff2$/,
+        loader: 'file-loader'
       }
     ]
   },
