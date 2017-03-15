@@ -220,8 +220,17 @@ a {
 
 #debug {
   position: absolute;
+  left: 1em;
+  bottom: 6em;
+  padding: 2em 1em;
+  background-color: rgba($lightUiColor, 0.75);
+  color: $Black;
+}
+#contact {
+  position: absolute;
   right: 1em;
   bottom: 1em;
-  padding: 2em 1em;
-  background-color: rgba($lightUiColor, 0.5);
+  padding: 1em 1em;
+  background-color: rgba($lightUiColor, 0.75);
+  color: $Black;
 }
