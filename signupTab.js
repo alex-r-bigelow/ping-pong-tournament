@@ -1,5 +1,4 @@
 import * as d3 from 'd3';
-import googleSheetsFakeDb from './googleSheetsFakeDb';
 import generalUtils from './generalUtils';
 import utahCharities from './utahCharities.csv';
 
@@ -22,6 +21,31 @@ function populateCharityList () {
   });
 }
 
+function validateSignupForm () {
+  let name = d3.select('#name').property('value');
+  let charity = d3.select('#charity').property('value');
+  if (name && charity) {
+    return Promise.resolve();
+  } else {
+    if (!name) {
+      d3.select('#name').classed('error', true);
+    }
+    if (!charity) {
+      d3.select('#charity').classed('error', true);
+    }
+    return Promise.reject();
+  }
+}
+
+function validateBetForm () {
+  if (d3.select('#bet').property('value') !== 'Choose a Player') {
+    return Promise.resolve();
+  } else {
+    d3.select('#bet').classed('error', true);
+    return Promise.reject();
+  }
+}
+
 function setup () {
   // Charity list
   populateCharityList();
@@ -37,14 +61,10 @@ function setup () {
 
   // Submission buttons
   d3.select('#signupButton').on('click', function () {
-    // TODO: validate that the input is valid
-    googleSheetsFakeDb.submitForm('Players', this.parentElement.parentElement);
-    // TODO: re-render everything when the promise resolves
+    generalUtils.handleSubmission(validateSignupForm, 'Players', this.parentElement.parentElement);
   });
   d3.select('#betButton').on('click', function () {
-    // TODO: validate that the input is valid
-    googleSheetsFakeDb.submitForm('Bets', this.parentElement.parentElement);
-    // TODO: re-render everything when the promise resolves
+    generalUtils.handleSubmission(validateBetForm, 'Bets', this.parentElement.parentElement);
   });
 }
 

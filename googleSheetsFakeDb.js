@@ -44,7 +44,7 @@ function getTable (tableName) {
           }
         });
         resolve({
-          results: cleanedResult,
+          contents: cleanedResult,
           headerOrder: headers
         });
       },
@@ -68,15 +68,25 @@ function submitForm (tableName, formElement) {
     // error, but we don't care: the data winds up in the spreadsheet, and
     // it doesn't really matter whether we get the google form html page back
     // (so error should resolve, not reject)
-    jQuery.ajax({
-      url: FORM_INFO[tableName].actionUrl,
-      data,
-      type: 'POST',
-      dataType: 'xml',
-      success: resolve,
-      error: resolve
-    });
-  });
+    try {
+      jQuery.ajax({
+        url: FORM_INFO[tableName].actionUrl,
+        data,
+        type: 'POST',
+        dataType: 'xml',
+        success: resolve,
+        error: resolve
+      }).done(() => {
+        resolve();
+      }).fail(() => {
+        resolve();
+      }).always(() => {
+        resolve();
+      });
+    } catch (e) {
+      resolve();
+    }
+  }).catch(() => {});
 }
 
 export default {
