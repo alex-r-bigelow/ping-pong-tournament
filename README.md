@@ -40,6 +40,8 @@ Setup:
 6. Finally, in this directory:
     npm install
 
+*Note:* It's up to you to populate the `Pools` and `Bracket` spreadsheets when the deadlines expire; this was a deliberate design decision to allow a little adaptation as necessary. Make a number for each pool, and a row for each player that has signed up. For the bracket, assign a numeric seed to each player.
+
 Development:
 ============
     webpack-dev-server --progress --colors --watch

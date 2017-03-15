@@ -90,10 +90,14 @@ a {
       }
 
       td {
-        white-space: nowrap;
         padding: 0.25em;
-        max-width: 30em;
-        overflow-x: auto;
+        text-align: center;
+        white-space: nowrap;
+        &.small {
+          white-space: normal;
+          font-size: 0.25em;
+          max-width: 25em;
+        }
       }
     }
   }

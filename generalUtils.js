@@ -41,12 +41,15 @@ function populateLeaderBoard () {
   // Calculate the total wins / losses per player
   // TODO
 
+  // Get the seeds for each player
+
   // Assemble the summary stats for each player
   let leaderBoardData = window.GLOBALS.DATA.Players.contents.map(player => {
     return [
       player['Player Name'],
       player['Charity'],
       totalBets[player['Player Name']] || 0,
+      '',
       0,
       0
     ];
@@ -67,6 +70,7 @@ function populateLeaderBoard () {
   cells = cellsEnter.merge(cells);
 
   cells.text(d => d);
+  cells.classed('small', (d, i) => i === 1);  // shrink the charity text
 }
 
 function showSpinner (show) {
