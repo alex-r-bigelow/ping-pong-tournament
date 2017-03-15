@@ -35,8 +35,10 @@
             bet a donation on a particular player. The non-profit selected by the winner of the
             tournament will recieve all donations / bets.
           </p>
+          <p class="canSignup">You have until <span id="signupDeadline"></span> to sign up.</p>
+          <p class="cantSignup">Unfortunately, you've missed the sign up deadline. However, you are still free to place bets.</p>
           <p>
-            We're doing this on the honor system; please drop at least $1 in the box by the table
+            We're doing this on the honor system; please donate at least $1 in the box by the ping pong table
             (if we've locked it away, please find a BruSCI member).
           </p>
           <span>
@@ -79,6 +81,13 @@
     </div>
     <div id="spinner">
       <img src="img/spinner.svg"/>
+    </div>
+    <div id="debug">
+      <span>Debugging:</span>
+      <span id="currentTest"></span>
+      <a id="clearTests" class="button">Clear tests</a>
+      <a id="testSignupExpiration" class="button">Test Sign Up Expiration</a>
+      <a id="testPoolPlayExpiration" class="button">Test Pool Play Expiration</a>
     </div>
   </body>
 </html>

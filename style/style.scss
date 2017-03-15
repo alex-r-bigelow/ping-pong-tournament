@@ -28,6 +28,10 @@ input.error {
 input:focus {
   border: 4px solid $uiAccentColor;
 }
+input:disabled+label {
+  /* note: this only works for labels that come immediately AFTER the input */
+  color: $darkUiColor;
+}
 h1, h2, h3, h4, h5, h6, b {
   font-weight: 700;
 }
@@ -122,6 +126,13 @@ a {
       max-width: 45em;
       margin: 0em auto;
 
+      #signupDeadline {
+        color: $uiErrorColor;
+      }
+      .cantSignup {
+        color: $uiErrorColor;
+      }
+
       form {
         display: flex;
         flex-direction: column;
@@ -201,4 +212,12 @@ a {
 }
 .selectMenu.error {
   border: 4px solid $uiErrorColor;
+}
+
+#debug {
+  position: absolute;
+  right: 1em;
+  bottom: 1em;
+  padding: 2em 1em;
+  background-color: rgba($lightUiColor, 0.5);
 }

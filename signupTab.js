@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import jQuery from 'jquery';
 import generalUtils from './generalUtils';
 import utahCharities from './utahCharities.csv';
 
@@ -66,6 +67,17 @@ function setup () {
   d3.select('#betButton').on('click', function () {
     generalUtils.handleSubmission(validateBetForm, 'Bets', this.parentElement.parentElement);
   });
+
+  // Update sign up status
+  if (window.GLOBALS.NOW < window.GLOBALS.SIGNUP_DEADLINE) {
+    jQuery('.cantSignup').hide();
+    jQuery('#signupDeadline').text(window.GLOBALS.SIGNUP_DEADLINE.toLocaleString());
+  } else {
+    jQuery('.canSignup').hide();
+    d3.select('#willPlay').property('disabled', true);
+    d3.select('#willBet').property('checked', true);
+    updatePlayOrBet();
+  }
 }
 
 function render () {

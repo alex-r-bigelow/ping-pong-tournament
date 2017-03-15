@@ -15,8 +15,31 @@ window.GLOBALS = {
   SIGNUP_DEADLINE: new Date('Mar 24, 2017, 23:59'),
   POOL_PLAY_DEADLINE: new Date('Apr 5, 2017, 23:59'),
   NOW: new Date(),
-  DATA: {}
+  DATA: {}, // this will be populated in getAllTables()
+  DEBUG_MODE: true  // set to true to try out different states from the UI
 };
+
+function setupDebugging () {
+  if (window.GLOBALS.DEBUG_MODE) {
+    // Debugging: testing other states
+    if (window.localStorage.getItem('debuggingDate')) {
+      window.GLOBALS.NOW = new Date(window.localStorage.getItem('debuggingDate'));
+      jQuery('#currentTest').text('Simulating ' + window.GLOBALS.NOW);
+    }
+    jQuery('#clearTests').on('click', () => {
+      window.localStorage.removeItem('debuggingDate');
+      window.location.reload();
+    });
+    jQuery('#testSignupExpiration').on('click', () => {
+      window.localStorage.setItem('debuggingDate', window.GLOBALS.SIGNUP_DEADLINE);
+      window.location.reload();
+    });
+    jQuery('#testPoolPlayExpiration').on('click', () => {
+      window.localStorage.setItem('debuggingDate', window.GLOBALS.POOL_PLAY_DEADLINE);
+      window.location.reload();
+    });
+  }
+}
 
 function updateTabs () {
   let startingTab = '#signupTab';
@@ -40,11 +63,9 @@ function updateTabs () {
   });
 }
 
-function delayedSetup () {
-  generalUtils.populateLeaderBoard();
-  signupTab.setup();
-  updateTabs();
-  generalUtils.showSpinner(false);
+function immediateSetup () {
+  setupDebugging();
+  getAllTables();
 }
 
 function getAllTables () {
@@ -56,5 +77,12 @@ function getAllTables () {
   }).then(delayedSetup);
 }
 
+function delayedSetup () {
+  generalUtils.populateLeaderBoard();
+  signupTab.setup();
+  updateTabs();
+  generalUtils.showSpinner(false);
+}
+
 window.onhashchange = updateTabs;
-window.onload = getAllTables;
+window.onload = immediateSetup;
