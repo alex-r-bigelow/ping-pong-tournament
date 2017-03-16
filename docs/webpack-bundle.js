@@ -12923,11 +12923,11 @@ function handleSubmission(validationFunction, tableName, formElement) {
   validationFunction().then(function () {
     showSpinner(true);
     _googleSheetsFakeDb2.default.submitForm(tableName, formElement).then(function () {
-      // Wait a couple seconds to refresh the page so Google has time
+      // Wait a few seconds to refresh the page so Google has time
       // to populate the spreadsheet
       window.setTimeout(function () {
         window.location.reload();
-      }, 2000);
+      }, 5000);
     });
   }).catch(function () {});
 }

@@ -86,11 +86,11 @@ function handleSubmission (validationFunction, tableName, formElement) {
     showSpinner(true);
     googleSheetsFakeDb.submitForm(tableName, formElement)
       .then(() => {
-        // Wait a couple seconds to refresh the page so Google has time
+        // Wait a few seconds to refresh the page so Google has time
         // to populate the spreadsheet
         window.setTimeout(() => {
           window.location.reload();
-        }, 2000);
+        }, 5000);
       });
   }).catch(() => {});
 }
