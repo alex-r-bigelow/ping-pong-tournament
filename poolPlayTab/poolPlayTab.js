@@ -20,14 +20,47 @@ function renderPools () {
   });
 
   let poolPlayTab = d3.select('#poolPlayTab');
-  let bounds = poolPlayTab.node().getBoundingClientRect();
+  let poolPlayTabElement = poolPlayTab.node();
+  let containerBounds = poolPlayTabElement.getBoundingClientRect();
   let svg = poolPlayTab.select('svg');
 
+  // Create groups for each pool
   let poolGroups = svg.selectAll('.poolGroup').data(d3.values(pools));
   poolGroups.exit().remove();
   let poolGroupsEnter = poolGroups.enter()
     .append('g').classed('poolGroup', true);
   poolGroups = poolGroupsEnter.merge(poolGroups);
+
+  poolGroups.attr('transform', 'rotate(-45)');
+
+  // Draw labels for each row / column
+  let xLabels = poolGroups.selectAll('.xLabel').data(players => players.slice(0, players.length - 1));
+  xLabels.exit().remove();
+  let xLabelsEnter = xLabels.enter()
+    .append('text').classed('xLabel', true);
+  xLabels = xLabelsEnter.merge(xLabels);
+
+  xLabels.text(d => d)
+    .attr('text-anchor', 'end')
+    .attr('x', -3 * CELL_SIZE / 4)
+    .attr('transform', 'rotate(90)')
+    .each(function (d, i) {
+      let players = d3.select(this.parentElement).datum();
+      d3.select(this)
+        .attr('y', (i - (players.length - 2)) * CELL_SIZE);
+    });
+
+  let yLabels = poolGroups.selectAll('.yLabel').data(players => players.slice(1).reverse());
+  yLabels.exit().remove();
+  let yLabelsEnter = yLabels.enter()
+    .append('text').classed('yLabel', true);
+  yLabels = yLabelsEnter.merge(yLabels);
+
+  yLabels.text(d => d)
+    .attr('x', function () {
+      let players = d3.select(this.parentElement).datum();
+      return (players.length - 1.25) * CELL_SIZE;
+    }).attr('y', (d, i) => i * CELL_SIZE);
 
   // Draw a cell for each pairing in the pool
   let matchCells = poolGroups.selectAll('.matchCell').data(players => {
@@ -54,22 +87,42 @@ function renderPools () {
   matchCells = matchCellsEnter.merge(matchCells);
 
   matchCells.attr('transform', d => {
-    return 'translate(' + (CELL_SIZE * d.x) + ',' + (CELL_SIZE * d.y) + ')';
+    return 'translate(' + (CELL_SIZE * d.x) + ',' + (CELL_SIZE * d.y) + ') rotate(45)';
   });
   matchCells.select('circle')
     .attr('r', CELL_SIZE / 2);
 
-  svg.attr('width', bounds.width)
-    .attr('height', bounds.height);
+  // Lay out each pool like text
+  let currentX = 0;
+  let currentY = 0;
+  let maxBottom = 0;
+  let maxRight = 0;
+  poolGroups.each(function () {
+    let rawBounds = this.getBoundingClientRect();
+    // Push to the next line if we've run out of space (newline-esque)
+    if (currentX + rawBounds.width > containerBounds.width) {
+      currentX = 0;
+      currentY = maxBottom;
+    }
+    let xOffset = currentX - (rawBounds.left - containerBounds.left) - poolPlayTabElement.scrollLeft;
+    let yOffset = currentY - (rawBounds.top - containerBounds.top) - poolPlayTabElement.scrollTop;
+    d3.select(this).attr('transform', 'translate(' + xOffset + ',' + yOffset + ') rotate(-45)');
+    currentX += rawBounds.width;
+    maxRight = Math.max(maxRight, currentX);
+    maxBottom = Math.max(maxBottom, currentY + rawBounds.height);
+  });
+
+  svg.attr('width', maxRight)
+    .attr('height', maxBottom);
 }
 
 function render () {
   if (window.GLOBALS.NOW >= window.GLOBALS.SIGNUP_DEADLINE) {
-    jQuery('svg').show();
+    jQuery('#poolPlayTab svg').show();
     jQuery('#poolPlayTab .waitMessage').hide();
     renderPools();
   } else {
-    jQuery('svg').hide();
+    jQuery('#poolPlayTab svg').hide();
     jQuery('#poolPlayTab .waitMessage').show();
     jQuery('#poolPlayTab .deadline').text(window.GLOBALS.SIGNUP_DEADLINE.toLocaleString());
   }
