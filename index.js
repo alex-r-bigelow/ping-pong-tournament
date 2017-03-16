@@ -50,6 +50,7 @@ function setupTouchTableSpecifics () {
   // Show / hide the icon to help bring up the touch table keyboard
   if (window.localStorage.getItem('isTouchTable')) {
     jQuery('#touchTableHint').show();
+    jQuery('#leaderBoard').css('padding-left', '4em');
   }
 }
 
