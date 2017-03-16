@@ -13943,7 +13943,9 @@ function getAllTables() {
     tableNames.forEach(function (tableName, index) {
       window.GLOBALS.DATA[tableName] = tables[index];
     });
-    window.GLOBALS.NOW = new Date();
+    if (!window.localStorage.getItem('debuggingDate')) {
+      window.GLOBALS.NOW = new Date();
+    }
     // Update the tables every 30 seconds
     window.setTimeout(function () {
       getAllTables();
