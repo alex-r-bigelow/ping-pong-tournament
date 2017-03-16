@@ -1,7 +1,10 @@
 import * as d3 from 'd3';
 import jQuery from 'jquery';
-import generalUtils from './generalUtils';
-import utahCharities from './utahCharities.csv';
+import generalUtils from '../generalUtils';
+import utahCharities from '../utahCharities.csv';
+
+import template from './template.html';
+import './style.scss';
 
 function updatePlayOrBet () {
   if (d3.select('#willPlay').property('checked')) {
@@ -48,6 +51,8 @@ function validateBetForm () {
 }
 
 function setup () {
+  jQuery('#signupTab').html(template);
+
   // Charity list
   populateCharityList();
 

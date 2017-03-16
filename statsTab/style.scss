@@ -1,0 +1,12 @@
+@import '../style/colors.scss';
+
+#statsTab {
+  height: 80vh;
+
+  div {
+    position: absolute;
+    top: calc(50% - 0.5em);
+    width: calc(100% - 2em);
+    text-align: center;
+  }
+}

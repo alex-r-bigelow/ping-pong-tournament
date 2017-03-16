@@ -1,0 +1,60 @@
+@import '../style/colors.scss';
+
+#signupTab {
+  max-width: 45em;
+  margin: 0em auto;
+
+  #signupDeadline {
+    color: $uiErrorColor;
+  }
+  .cantSignup {
+    color: $uiErrorColor;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+
+    > span {
+      position: relative;
+      height: 4em;
+      pointer-events: none;
+
+      > * {
+        pointer-events: all;
+      }
+
+      label {
+        position: absolute;
+        text-align: right;
+        right: 22em;
+        bottom: 1.5em;
+      }
+      input {
+        position: absolute;
+        right: 0em;
+        width: 10em;
+        bottom: 0.5em;
+      }
+      .button {
+        position: absolute;
+        right: 0em;
+        bottom: 0.5em;
+        &#betButton {
+          bottom: 3.75em;
+        }
+      }
+      ul.selectMenu {
+        position: relative;
+        display: inline-block;
+        left: 25em;
+        /* cant position the select menu absolutely; instead I manually set this location */
+
+        li {
+          max-width: 13em;
+          overflow-x: hidden;
+        }
+      }
+    }
+  }
+}

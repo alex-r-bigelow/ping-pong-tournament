@@ -8,7 +8,11 @@ import googleSheetsFakeDb from './googleSheetsFakeDb';
 window.jQuery = jQuery;
 window.d3 = d3;
 
-import signupTab from './signupTab';
+import signupTab from './signupTab/signupTab';
+import poolPlayTab from './poolPlayTab/poolPlayTab';
+import bracketTab from './bracketTab/bracketTab';
+import statsTab from './statsTab/statsTab';
+
 import './style/style.scss';
 
 window.GLOBALS = {
@@ -45,7 +49,8 @@ function updateTabs () {
   let startingTab = '#signupTab';
   if (window.GLOBALS.NOW >= window.GLOBALS.SIGNUP_DEADLINE) {
     startingTab = '#poolPlayTab';
-  } else if (window.GLOBALS.NOW >= window.GLOBALS.POOL_PLAY_DEADLINE) {
+  }
+  if (window.GLOBALS.NOW >= window.GLOBALS.POOL_PLAY_DEADLINE) {
     startingTab = '#bracketTab';
   }
 
@@ -61,6 +66,11 @@ function updateTabs () {
       element.setAttribute('class', 'button');
     }
   });
+
+  signupTab.render();
+  poolPlayTab.render();
+  bracketTab.render();
+  statsTab.render();
 }
 
 function immediateSetup () {
@@ -80,6 +90,9 @@ function getAllTables () {
 function delayedSetup () {
   generalUtils.populateLeaderBoard();
   signupTab.setup();
+  poolPlayTab.setup();
+  bracketTab.setup();
+  statsTab.setup();
   updateTabs();
   generalUtils.showSpinner(false);
 }
