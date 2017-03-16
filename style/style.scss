@@ -102,28 +102,33 @@ a {
     }
   }
 
-  #mainPanel {
+  nav {
     position: absolute;
-    top: 0px;
+    top: 2em;
     right: 0px;
     width: calc(66.66666666% - 2em);
-    padding: 1em;
+    height: 3.25em;
 
     display: flex;
-    flex-direction: column;
+    justify-content: center;
 
-    nav {
-      margin: 2em auto;
+    .button {
+      margin: 0em 0.5em;
 
-      .button {
-        margin: 0em 0.5em;
-
-        &.selected {
-          background-color: $White;
-          color: $uiAccentColor;
-        }
+      &.selected {
+        background-color: $White;
+        color: $uiAccentColor;
       }
     }
+  }
+
+  #mainPanel {
+    position: absolute;
+    top: 7.25em;
+    right: 0px;
+    width: calc(66.66666666% - 2em);
+    bottom: 0px;
+    padding: 1em;
   }
 }
 
@@ -159,6 +164,16 @@ a {
 }
 .selectMenu.error {
   border: 4px solid $uiErrorColor;
+}
+.waitMessage {
+  position: absolute;
+  top: calc(50% - 0.5em);
+  width: calc(100% - 2em);
+  text-align: center;
+
+  .deadline {
+    color: $uiErrorColor;
+  }
 }
 
 #debug {

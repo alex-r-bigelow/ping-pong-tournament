@@ -9,117 +9,48 @@
     <div id="backgroundOverlay"></div>
     <div id="mainPage">
       <div id="leaderBoard">
-        <a id="signupButton" href="#" class="button">Sign up</a>
         <table>
           <thead>
             <tr>
               <td>Name</td>
               <td>Charity</td>
               <td># of bets</td>
+              <td>Seed</td>
               <td>Wins</td>
               <td>Losses</td>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Ichiko</td>
-              <td>Doctors Without Borders</td>
-              <td>290</td>
-              <td>7</td>
-              <td>0</td>
-            </tr>
-            <tr>
-              <td>Futaro</td>
-              <td>UNICEF</td>
-              <td>0</td>
-              <td>5</td>
-              <td>2</td>
-            </tr>
           </tbody>
         </table>
       </div>
-      <form id="currentMatch">
-        <h3 id="currentLabel">Currently playing:</h3>
-        <table>
-          <thead>
-            <tr>
-              <td id="currentPlayerA">
-                <h1>Chris Johnson</h1>
-              </td>
-              <td>
-                vs
-              </td>
-              <td id="currentPlayerB">
-                <h1>Greg Jones</h1>
-              </td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <input id="scoreA" name="scoreA" type="number"/>
-              </td>
-              <td></td>
-              <td>
-                <input id="scoreB" name="scoreB" type="number"/>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <a href="#" id="submitScoreButton" class="button">Submit Final Score</a>
-      </form>
-      <hr/>
-      <div id="calendar">
-        <div>TODO: show google calendar listing all scheduled matches</div>
-        <div id="scheduler">
-          <ul id="playerA" class="selectMenu"></ul>
-          <p>vs</p>
-          <ul id="playerB" class="selectMenu"></ul>
-          <input type="datetime-local"/>
-          <a href="#" id="scheduleMatchButton" class="button">Schedule a match</a>
+      <div id="contact">
+        If you made a mistake, or something needs to be corrected, send an email to <a>abigelow@cs.utah.edu</a>
+      </div>
+      <nav>
+        <a href="#signupTab" class="button">Sign Up</a>
+        <a href="#poolPlayTab" class="button">Pool Play</a>
+        <a href="#bracketTab" class="button">Bracket</a>
+        <a href="#statsTab" class="button">Stats</a>
+      </nav>
+      <div id="mainPanel">
+        <div id="signupTab" class="tab">
+
         </div>
+        <div id="poolPlayTab" class="tab"></div>
+        <div id="bracketTab" class="tab"></div>
+        <div id="statsTab" class="tab"></div>
       </div>
     </div>
-    <div id="registrationScreen">
-      <form>
-        <p>This is a <b>donate-to-play</b> tournament. If you don't want to play, you can still
-          bet a donation on a particular player. The non-profit selected by the winner of the
-          tournament will recieve all donations / bets.
-        </p>
-        <p>
-          We're doing this on the honor system; please drop at least $1 in the box by the table
-          (if we've locked it away, please find a BruSCI member).
-        </p>
-        <span>
-          <label for="name">Your name:</label>
-          <input name="name", id="name"/>
-        </span>
-        <span>
-          <input name="playOrBet" id="willPlay" value="willPlay" type="radio" checked/>
-          <label for="willPlay">I want to play</label>
-        </span>
-        <span>
-          <input name="playOrBet" id="willBet" value="willBet" type="radio"/>
-          <label for="willBet">I want to bet</label>
-        </span>
-        <span class="charityElement">
-          <label for="charity">The 501(c)(3) non-profit you'll be playing for:</label>
-          <input name="charity", id="charity" list="charityList"/>
-          <datalist id="charityList">
-          </dataList>
-        </span>
-        <span id="betSelector">
-          <label>Pick the player that you want to bet on:</label>
-          <ul id="bet" class="selectMenu">
-          </ul>
-        </span>
-      </form>
-      <div id="footer">
-        <a id="finishSignupButton" class="button">Sign up</a>
-        <a id="calendarSyncButton" class="charityElement button">Connect</a>
-        <label class="charityElement">Connect your Google calendar for easier match scheduling (optional):</label>
-      </div>
-      <a href="#" class="close button">x</a>
+    <div id="debug" style="display:none">
+      <span>Debugging:</span>
+      <span id="currentTest"></span>
+      <a id="clearTests" class="button">Clear tests</a>
+      <a id="testSignupExpiration" class="button">Test Sign Up Expiration</a>
+      <a id="testPoolPlayExpiration" class="button">Test Pool Play Expiration</a>
+    </div>
+    <div id="spinner">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSIzMjAiIGhlaWdodD0iMzIwIj48Zz48cGF0aCBpZD0ibGluZSIgc3Ryb2tlPSIjMTExIiBzdHJva2Utd2lkdGg9IjMwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIGQ9Ik0xNSAxNjBoNTAiLz48dXNlIHhsaW5rOmhyZWY9IiNsaW5lIiB0cmFuc2Zvcm09InJvdGF0ZSgzMCAxNjAgMTYwKSIgb3BhY2l0eT0iLjA4MyIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDYwIDE2MCAxNjApIiBvcGFjaXR5PSIuMTY2Ii8+PHVzZSB4bGluazpocmVmPSIjbGluZSIgdHJhbnNmb3JtPSJyb3RhdGUoOTAgMTYwIDE2MCkiIG9wYWNpdHk9Ii4yNSIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDEyMCAxNjAgMTYwKSIgb3BhY2l0eT0iLjMzMyIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDE1MCAxNjAgMTYwKSIgb3BhY2l0eT0iLjQxNyIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDE4MCAxNjAgMTYwKSIgb3BhY2l0eT0iLjUiLz48dXNlIHhsaW5rOmhyZWY9IiNsaW5lIiB0cmFuc2Zvcm09InJvdGF0ZSgyMTAgMTYwIDE2MCkiIG9wYWNpdHk9Ii41ODMiLz48dXNlIHhsaW5rOmhyZWY9IiNsaW5lIiB0cmFuc2Zvcm09InJvdGF0ZSgyNDAgMTYwIDE2MCkiIG9wYWNpdHk9Ii42NjciLz48dXNlIHhsaW5rOmhyZWY9IiNsaW5lIiB0cmFuc2Zvcm09InJvdGF0ZSgyNzAgMTYwIDE2MCkiIG9wYWNpdHk9Ii43NSIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDMwMCAxNjAgMTYwKSIgb3BhY2l0eT0iLjgzMyIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDMzMCAxNjAgMTYwKSIgb3BhY2l0eT0iLjkxNyIvPjxhbmltYXRlVHJhbnNmb3JtIGF0dHJpYnV0ZU5hbWU9InRyYW5zZm9ybSIgYXR0cmlidXRlVHlwZT0iWE1MIiB0eXBlPSJyb3RhdGUiIGJlZ2luPSIwcyIgZHVyPSIxcyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiIGNhbGNNb2RlPSJkaXNjcmV0ZSIga2V5VGltZXM9IjA7LjA4MzM7LjE2NjsuMjU7LjMzMzM7LjQxNjY7LjU7LjU4MzM7LjY2NjY7Ljc1Oy44MzMzOy45MTY2OzEiIHZhbHVlcz0iMCwxNjAsMTYwOzMwLDE2MCwxNjA7NjAsMTYwLDE2MDs5MCwxNjAsMTYwOzEyMCwxNjAsMTYwOzE1MCwxNjAsMTYwOzE4MCwxNjAsMTYwOzIxMCwxNjAsMTYwOzI0MCwxNjAsMTYwOzI3MCwxNjAsMTYwOzMwMCwxNjAsMTYwOzMzMCwxNjAsMTYwOzM2MCwxNjAsMTYwIi8+PC9nPjwvc3ZnPg=="/>
     </div>
   <script type="text/javascript" src="webpack-bundle.js"></script></body>
 </html>

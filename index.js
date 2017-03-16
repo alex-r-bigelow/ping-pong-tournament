@@ -20,12 +20,13 @@ window.GLOBALS = {
   POOL_PLAY_DEADLINE: new Date('Apr 5, 2017, 23:59'),
   NOW: new Date(),
   DATA: {}, // this will be populated in getAllTables()
-  DEBUG_MODE: true  // set to true to try out different states from the UI
+  DEBUG_MODE: false  // set to true to try out different states from the UI
 };
 
 function setupDebugging () {
   if (window.GLOBALS.DEBUG_MODE) {
     // Debugging: testing other states
+    jQuery('#debug').show();
     if (window.localStorage.getItem('debuggingDate')) {
       window.GLOBALS.NOW = new Date(window.localStorage.getItem('debuggingDate'));
       jQuery('#currentTest').text('Simulating ' + window.GLOBALS.NOW);
@@ -97,5 +98,5 @@ function delayedSetup () {
   generalUtils.showSpinner(false);
 }
 
-window.onhashchange = updateTabs;
+window.onhashchange = window.onresize = updateTabs;
 window.onload = immediateSetup;

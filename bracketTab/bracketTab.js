@@ -8,8 +8,20 @@ function setup () {
   jQuery('#bracketTab').html(template);
 }
 
-function render () {
+function renderBracket () {
   // TODO
+}
+
+function render () {
+  if (window.GLOBALS.NOW < window.GLOBALS.POOL_PLAY_DEADLINE) {
+    jQuery('svg').hide();
+    jQuery('#bracketTab .waitMessage').show();
+    jQuery('#bracketTab .deadline').text(window.GLOBALS.POOL_PLAY_DEADLINE.toLocaleString());
+  } else {
+    jQuery('svg').show();
+    jQuery('#bracketTab .waitMessage').hide();
+    renderBracket();
+  }
 }
 
 export default {

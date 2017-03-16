@@ -24,71 +24,30 @@
           </tbody>
         </table>
       </div>
-      <div id="debug">
-        <span>Debugging:</span>
-        <span id="currentTest"></span>
-        <a id="clearTests" class="button">Clear tests</a>
-        <a id="testSignupExpiration" class="button">Test Sign Up Expiration</a>
-        <a id="testPoolPlayExpiration" class="button">Test Pool Play Expiration</a>
-      </div>
       <div id="contact">
         If you made a mistake, or something needs to be corrected, send an email to <a>abigelow@cs.utah.edu</a>
       </div>
+      <nav>
+        <a href="#signupTab" class="button">Sign Up</a>
+        <a href="#poolPlayTab" class="button">Pool Play</a>
+        <a href="#bracketTab" class="button">Bracket</a>
+        <a href="#statsTab" class="button">Stats</a>
+      </nav>
       <div id="mainPanel">
-        <nav>
-          <a href="#signupTab" class="button">Sign Up</a>
-          <a href="#poolPlayTab" class="button">Pool Play</a>
-          <a href="#bracketTab" class="button">Bracket</a>
-          <a href="#statsTab" class="button">Stats</a>
-        </nav>
         <div id="signupTab" class="tab">
-          <p>This is a <b>donate-to-play</b> tournament. If you don't want to play, you can still
-            bet a donation on a particular player. The non-profit selected by the winner of the
-            tournament will recieve all donations / bets.
-          </p>
-          <p class="canSignup">You have until <span id="signupDeadline"></span> to sign up.</p>
-          <p class="cantSignup">Unfortunately, you've missed the sign up deadline. However, you are still free to place bets.</p>
-          <p>
-            We're doing this on the honor system; please donate at least $1 in the box by the ping pong table
-            (if we've locked it away, please find a BruSCI member).
-          </p>
-          <span>
-            <input name="playOrBet" id="willPlay" value="willPlay" type="radio" checked/>
-            <label for="willPlay">I want to play</label>
-          </span>
-          <span>
-            <input name="playOrBet" id="willBet" value="willBet" type="radio"/>
-            <label for="willBet">I want to bet</label>
-          </span>
-          <form id="signupForm">
-            <span>
-              <label for="name">Your name:</label>
-              <input name="Player Name", id="name"/>
-            </span>
-            <span>
-              <label for="charity">The 501(c)(3) non-profit you'll be playing for:</label>
-              <input name="Charity", id="charity" list="charityList"/>
-              <datalist id="charityList">
-              </dataList>
-            </span>
-            <span>
-              <a id="signupButton" class="button">Sign Up</a>
-            </span>
-          </form>
-          <form id="betForm">
-            <span class="betElement">
-              <label>Pick the player that you want to bet on:</label>
-              <ul id="bet" class="selectMenu" name="Player"></ul>
-            </span>
-            <span class="betElement">
-              <a id="betButton" class="button">Bet</a>
-            </span>
-          </form>
+
         </div>
         <div id="poolPlayTab" class="tab"></div>
         <div id="bracketTab" class="tab"></div>
         <div id="statsTab" class="tab"></div>
       </div>
+    </div>
+    <div id="debug" style="display:none">
+      <span>Debugging:</span>
+      <span id="currentTest"></span>
+      <a id="clearTests" class="button">Clear tests</a>
+      <a id="testSignupExpiration" class="button">Test Sign Up Expiration</a>
+      <a id="testPoolPlayExpiration" class="button">Test Pool Play Expiration</a>
     </div>
     <div id="spinner">
       <img src="img/spinner.svg"/>
