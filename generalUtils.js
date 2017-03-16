@@ -81,6 +81,15 @@ function showSpinner (show) {
   }
 }
 
+function displayNotification (message) {
+  let notification = jQuery('#notification');
+  notification.text(message);
+  notification.show();
+  window.setTimeout(() => {
+    notification.hide(1000);
+  }, 5000);
+}
+
 function handleSubmission (validationFunction, tableName, formElement) {
   validationFunction().then(() => {
     showSpinner(true);
@@ -99,5 +108,6 @@ export default {
   populatePlayerLists,
   populateLeaderBoard,
   showSpinner,
-  handleSubmission
+  handleSubmission,
+  displayNotification
 };

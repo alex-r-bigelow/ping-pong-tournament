@@ -28,6 +28,11 @@ function populateCharityList () {
 function validateSignupForm () {
   let name = d3.select('#name').property('value');
   let charity = d3.select('#charity').property('value');
+  if (window.GLOBALS.DATA.Players.contents.filter(d => d['Player Name'] === name).length > 0) {
+    d3.select('#name').classed('error', true);
+    generalUtils.displayNotification('Sorry, someone already signed up with that name');
+    return Promise.reject();
+  }
   if (name && charity) {
     return Promise.resolve();
   } else {
