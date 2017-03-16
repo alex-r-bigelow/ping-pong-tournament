@@ -10,6 +10,7 @@ function populatePlayerLists (containerSelector) {
     'text': 'Choose a Player'
   }].concat(window.GLOBALS.DATA.Players.contents);
   let options = container.selectAll('li').data(data);
+  options.exit().remove();
   let optionsEnter = options.enter().append('li');
   optionsEnter.append('span')
     .attr('class', 'name');

@@ -72,19 +72,23 @@ export default function (containerElement) {
 
   // Attach properties to make the li or ol DOM element behave more like a
   // select element
-  Object.defineProperty(containerElement, 'value', { get: function () {
-    let selectedElement = d3el.select('.selected');
-    return selectedElement.attr('value') || selectedElement.text();
-  }});
-  Object.defineProperty(containerElement, 'selectedIndex', { get: function () {
-    let entries = this.children;
-    for (let i = 0; i < entries.length; i += 1) {
-      if (entries[i].classList.contains('selected')) {
-        return i;
+  if (d3el.property('value') === undefined) {
+    Object.defineProperty(containerElement, 'value', { get: function () {
+      let selectedElement = d3el.select('.selected');
+      return selectedElement.attr('value') || selectedElement.text();
+    }});
+  }
+  if (d3el.property('selectedIndex') === undefined) {
+    Object.defineProperty(containerElement, 'selectedIndex', { get: function () {
+      let entries = this.children;
+      for (let i = 0; i < entries.length; i += 1) {
+        if (entries[i].classList.contains('selected')) {
+          return i;
+        }
       }
-    }
-    return -1;
-  }});
+      return -1;
+    }});
+  }
 
   // Make the entries respond to clicks
   d3el.selectAll('li')

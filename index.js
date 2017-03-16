@@ -76,16 +76,22 @@ function updateTabs () {
     }
   });
 
+  generalUtils.populateLeaderBoard();
   signupTab.render();
   poolPlayTab.render();
   bracketTab.render();
   statsTab.render();
+  generalUtils.showSpinner(false);
 }
 
 function immediateSetup () {
   setupDebugging();
   setupTouchTableSpecifics();
   getAllTables();
+  signupTab.setup();
+  poolPlayTab.setup();
+  bracketTab.setup();
+  statsTab.setup();
 }
 
 function getAllTables () {
@@ -94,17 +100,12 @@ function getAllTables () {
     tableNames.forEach((tableName, index) => {
       window.GLOBALS.DATA[tableName] = tables[index];
     });
-  }).then(delayedSetup);
-}
-
-function delayedSetup () {
-  generalUtils.populateLeaderBoard();
-  signupTab.setup();
-  poolPlayTab.setup();
-  bracketTab.setup();
-  statsTab.setup();
-  updateTabs();
-  generalUtils.showSpinner(false);
+    window.GLOBALS.NOW = new Date();
+    // Update the tables every 30 seconds
+    window.setTimeout(() => {
+      getAllTables();
+    }, 30000);
+  }).then(updateTabs);
 }
 
 window.onhashchange = window.onresize = updateTabs;

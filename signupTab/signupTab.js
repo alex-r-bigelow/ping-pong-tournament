@@ -61,9 +61,6 @@ function setup () {
   // Charity list
   populateCharityList();
 
-  // People select menu
-  generalUtils.populatePlayerLists('#bet');
-
   // Radio buttons
   d3.selectAll('#willPlay, #willBet').on('change', () => {
     updatePlayOrBet();
@@ -77,6 +74,11 @@ function setup () {
   d3.select('#betButton').on('click', function () {
     generalUtils.handleSubmission(validateBetForm, 'Bets', this.parentElement.parentElement);
   });
+}
+
+function render () {
+  // People select menu
+  generalUtils.populatePlayerLists('#bet');
 
   // Update sign up status
   if (window.GLOBALS.NOW < window.GLOBALS.SIGNUP_DEADLINE) {
@@ -88,10 +90,6 @@ function setup () {
     d3.select('#willBet').property('checked', true);
     updatePlayOrBet();
   }
-}
-
-function render () {
-  // TODO
 }
 
 export default {

@@ -12850,6 +12850,7 @@ function populatePlayerLists(containerSelector) {
     'text': 'Choose a Player'
   }].concat(window.GLOBALS.DATA.Players.contents);
   var options = container.selectAll('li').data(data);
+  options.exit().remove();
   var optionsEnter = options.enter().append('li');
   optionsEnter.append('span').attr('class', 'name');
   optionsEnter.append('span').attr('class', 'charity');
@@ -13310,9 +13311,6 @@ function setup() {
   // Charity list
   populateCharityList();
 
-  // People select menu
-  _generalUtils2.default.populatePlayerLists('#bet');
-
   // Radio buttons
   d3.selectAll('#willPlay, #willBet').on('change', function () {
     updatePlayOrBet();
@@ -13326,6 +13324,11 @@ function setup() {
   d3.select('#betButton').on('click', function () {
     _generalUtils2.default.handleSubmission(validateBetForm, 'Bets', this.parentElement.parentElement);
   });
+}
+
+function render() {
+  // People select menu
+  _generalUtils2.default.populatePlayerLists('#bet');
 
   // Update sign up status
   if (window.GLOBALS.NOW < window.GLOBALS.SIGNUP_DEADLINE) {
@@ -13337,10 +13340,6 @@ function setup() {
     d3.select('#willBet').property('checked', true);
     updatePlayOrBet();
   }
-}
-
-function render() {
-  // TODO
 }
 
 exports.default = {
@@ -13427,19 +13426,23 @@ exports.default = function (containerElement) {
 
   // Attach properties to make the li or ol DOM element behave more like a
   // select element
-  Object.defineProperty(containerElement, 'value', { get: function get() {
-      var selectedElement = d3el.select('.selected');
-      return selectedElement.attr('value') || selectedElement.text();
-    } });
-  Object.defineProperty(containerElement, 'selectedIndex', { get: function get() {
-      var entries = this.children;
-      for (var i = 0; i < entries.length; i += 1) {
-        if (entries[i].classList.contains('selected')) {
-          return i;
+  if (d3el.property('value') === undefined) {
+    Object.defineProperty(containerElement, 'value', { get: function get() {
+        var selectedElement = d3el.select('.selected');
+        return selectedElement.attr('value') || selectedElement.text();
+      } });
+  }
+  if (d3el.property('selectedIndex') === undefined) {
+    Object.defineProperty(containerElement, 'selectedIndex', { get: function get() {
+        var entries = this.children;
+        for (var i = 0; i < entries.length; i += 1) {
+          if (entries[i].classList.contains('selected')) {
+            return i;
+          }
         }
-      }
-      return -1;
-    } });
+        return -1;
+      } });
+  }
 
   // Make the entries respond to clicks
   d3el.selectAll('li').on('click', function () {
@@ -13916,16 +13919,22 @@ function updateTabs() {
     }
   });
 
+  _generalUtils2.default.populateLeaderBoard();
   _signupTab2.default.render();
   _poolPlayTab2.default.render();
   _bracketTab2.default.render();
   _statsTab2.default.render();
+  _generalUtils2.default.showSpinner(false);
 }
 
 function immediateSetup() {
   setupDebugging();
   setupTouchTableSpecifics();
   getAllTables();
+  _signupTab2.default.setup();
+  _poolPlayTab2.default.setup();
+  _bracketTab2.default.setup();
+  _statsTab2.default.setup();
 }
 
 function getAllTables() {
@@ -13934,17 +13943,12 @@ function getAllTables() {
     tableNames.forEach(function (tableName, index) {
       window.GLOBALS.DATA[tableName] = tables[index];
     });
-  }).then(delayedSetup);
-}
-
-function delayedSetup() {
-  _generalUtils2.default.populateLeaderBoard();
-  _signupTab2.default.setup();
-  _poolPlayTab2.default.setup();
-  _bracketTab2.default.setup();
-  _statsTab2.default.setup();
-  updateTabs();
-  _generalUtils2.default.showSpinner(false);
+    window.GLOBALS.NOW = new Date();
+    // Update the tables every 30 seconds
+    window.setTimeout(function () {
+      getAllTables();
+    }, 30000);
+  }).then(updateTabs);
 }
 
 window.onhashchange = window.onresize = updateTabs;
