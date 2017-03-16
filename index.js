@@ -46,6 +46,13 @@ function setupDebugging () {
   }
 }
 
+function setupTouchTableSpecifics () {
+  // Show / hide the icon to help bring up the touch table keyboard
+  if (window.localStorage.getItem('isTouchTable')) {
+    jQuery('#touchTableHint').show();
+  }
+}
+
 function updateTabs () {
   let startingTab = '#signupTab';
   if (window.GLOBALS.NOW >= window.GLOBALS.SIGNUP_DEADLINE) {
@@ -76,6 +83,7 @@ function updateTabs () {
 
 function immediateSetup () {
   setupDebugging();
+  setupTouchTableSpecifics();
   getAllTables();
 }
 
