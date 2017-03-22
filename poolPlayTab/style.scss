@@ -13,13 +13,16 @@
     fill: $White;
   }
 
-  .matchCell {
+  .matchCell.noScores {
     circle {
       fill: $uiAccentColor;
     }
     text tspan {
       fill: $White;
       text-anchor: middle;
+    }
+    path {
+      display: none;
     }
 
     &:hover {
@@ -30,6 +33,21 @@
       text tspan {
         fill: $darkUiColor;
       }
+    }
+  }
+  .matchCell.withScores {
+    circle {
+      fill: $White;
+    }
+    text tspan {
+      display: none;
+    }
+    path {
+      fill: $uiAccentColor;
+      stroke: $uiAccentColor;
+      stroke-width: 10px;
+      stroke-linejoin: round;
+      stroke-linecap: round;
     }
   }
 }

@@ -103,6 +103,7 @@ function getAllTables () {
     if (!window.localStorage.getItem('debuggingDate')) {
       window.GLOBALS.NOW = new Date();
     }
+    delete window.GLOBALS.MATCH_LOOKUP;
     // Update the tables every 30 seconds
     window.setTimeout(() => {
       getAllTables();

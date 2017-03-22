@@ -53,6 +53,41 @@
       <a id="testSignupExpiration" class="button">Test Sign Up Expiration</a>
       <a id="testPoolPlayExpiration" class="button">Test Pool Play Expiration</a>
     </div>
+    <div id="scoreEntryModal" class="messageBlurb" style="display:none">
+      <h1>Round: <span id="roundField" name="Round"></span></h1>
+      <form>
+        <table>
+          <thead>
+            <tr>
+              <td>Set</td>
+              <td id="player1" name="Player 1">Player 1</td>
+              <td id="player2" name="Player 2">Player 2</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Set 1</td>
+              <td><input name="Player 1 Set 1"/></td>
+              <td><input name="Player 2 Set 1"/></td>
+            </tr>
+            <tr>
+              <td>Set 2</td>
+              <td><input name="Player 1 Set 2"/></td>
+              <td><input name="Player 2 Set 2"/></td>
+            </tr>
+            <tr>
+              <td>Set 3</td>
+              <td><input name="Player 1 Set 3"/></td>
+              <td><input name="Player 2 Set 3"/></td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+      <span id="closeButtons">
+        <a id="cancelButton" class="button">Cancel</a>
+        <a id="submitScoresButton" class="button">Submit Scores</a>
+      </span>
+    </div>
     <div id="spinner">
       <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSIzMjAiIGhlaWdodD0iMzIwIj48Zz48cGF0aCBpZD0ibGluZSIgc3Ryb2tlPSIjMTExIiBzdHJva2Utd2lkdGg9IjMwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIGQ9Ik0xNSAxNjBoNTAiLz48dXNlIHhsaW5rOmhyZWY9IiNsaW5lIiB0cmFuc2Zvcm09InJvdGF0ZSgzMCAxNjAgMTYwKSIgb3BhY2l0eT0iLjA4MyIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDYwIDE2MCAxNjApIiBvcGFjaXR5PSIuMTY2Ii8+PHVzZSB4bGluazpocmVmPSIjbGluZSIgdHJhbnNmb3JtPSJyb3RhdGUoOTAgMTYwIDE2MCkiIG9wYWNpdHk9Ii4yNSIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDEyMCAxNjAgMTYwKSIgb3BhY2l0eT0iLjMzMyIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDE1MCAxNjAgMTYwKSIgb3BhY2l0eT0iLjQxNyIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDE4MCAxNjAgMTYwKSIgb3BhY2l0eT0iLjUiLz48dXNlIHhsaW5rOmhyZWY9IiNsaW5lIiB0cmFuc2Zvcm09InJvdGF0ZSgyMTAgMTYwIDE2MCkiIG9wYWNpdHk9Ii41ODMiLz48dXNlIHhsaW5rOmhyZWY9IiNsaW5lIiB0cmFuc2Zvcm09InJvdGF0ZSgyNDAgMTYwIDE2MCkiIG9wYWNpdHk9Ii42NjciLz48dXNlIHhsaW5rOmhyZWY9IiNsaW5lIiB0cmFuc2Zvcm09InJvdGF0ZSgyNzAgMTYwIDE2MCkiIG9wYWNpdHk9Ii43NSIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDMwMCAxNjAgMTYwKSIgb3BhY2l0eT0iLjgzMyIvPjx1c2UgeGxpbms6aHJlZj0iI2xpbmUiIHRyYW5zZm9ybT0icm90YXRlKDMzMCAxNjAgMTYwKSIgb3BhY2l0eT0iLjkxNyIvPjxhbmltYXRlVHJhbnNmb3JtIGF0dHJpYnV0ZU5hbWU9InRyYW5zZm9ybSIgYXR0cmlidXRlVHlwZT0iWE1MIiB0eXBlPSJyb3RhdGUiIGJlZ2luPSIwcyIgZHVyPSIxcyIgcmVwZWF0Q291bnQ9ImluZGVmaW5pdGUiIGNhbGNNb2RlPSJkaXNjcmV0ZSIga2V5VGltZXM9IjA7LjA4MzM7LjE2NjsuMjU7LjMzMzM7LjQxNjY7LjU7LjU4MzM7LjY2NjY7Ljc1Oy44MzMzOy45MTY2OzEiIHZhbHVlcz0iMCwxNjAsMTYwOzMwLDE2MCwxNjA7NjAsMTYwLDE2MDs5MCwxNjAsMTYwOzEyMCwxNjAsMTYwOzE1MCwxNjAsMTYwOzE4MCwxNjAsMTYwOzIxMCwxNjAsMTYwOzI0MCwxNjAsMTYwOzI3MCwxNjAsMTYwOzMwMCwxNjAsMTYwOzMzMCwxNjAsMTYwOzM2MCwxNjAsMTYwIi8+PC9nPjwvc3ZnPg=="/>
     </div>

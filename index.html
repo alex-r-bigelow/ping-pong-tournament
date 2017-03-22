@@ -53,6 +53,41 @@
       <a id="testSignupExpiration" class="button">Test Sign Up Expiration</a>
       <a id="testPoolPlayExpiration" class="button">Test Pool Play Expiration</a>
     </div>
+    <div id="scoreEntryModal" class="messageBlurb" style="display:none">
+      <h1>Round: <span id="roundField" name="Round"></span></h1>
+      <form>
+        <table>
+          <thead>
+            <tr>
+              <td>Set</td>
+              <td id="player1" name="Player 1">Player 1</td>
+              <td id="player2" name="Player 2">Player 2</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Set 1</td>
+              <td><input name="Player 1 Set 1"/></td>
+              <td><input name="Player 2 Set 1"/></td>
+            </tr>
+            <tr>
+              <td>Set 2</td>
+              <td><input name="Player 1 Set 2"/></td>
+              <td><input name="Player 2 Set 2"/></td>
+            </tr>
+            <tr>
+              <td>Set 3</td>
+              <td><input name="Player 1 Set 3"/></td>
+              <td><input name="Player 2 Set 3"/></td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+      <span id="closeButtons">
+        <a id="cancelButton" class="button">Cancel</a>
+        <a id="submitScoresButton" class="button">Submit Scores</a>
+      </span>
+    </div>
     <div id="spinner">
       <img src="img/spinner.svg"/>
     </div>
