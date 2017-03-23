@@ -1,5 +1,25 @@
 @import '../style/colors.scss';
 
 #statsTab {
+  position: absolute;
+  left: 1em;
+  top: 1em;
+  right: 1em;
+  bottom: 1em;
 
+  #nodeLayer {
+    circle {
+      fill: $uiAccentColor;
+    }
+    text tspan {
+      fill: $White;
+      text-anchor: middle;
+    }
+  }
+  #linkLayer {
+    path {
+      stroke: $White;
+      stroke-width: 1px;
+    }
+  }
 }
