@@ -70,6 +70,14 @@ table {
   bottom: -256px;
   right: -256px;
 }
+h1 {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  left: 0px;
+  text-align: center;
+  color: $uiAccentColor;
+}
 #backgroundOverlay {
   position: fixed;
   top: 0px;
@@ -80,7 +88,7 @@ table {
 }
 #mainPage {
   position: absolute;
-  top: 0px;
+  top: 4em;
   right: 0px;
   bottom: 0px;
   left: 0px;
