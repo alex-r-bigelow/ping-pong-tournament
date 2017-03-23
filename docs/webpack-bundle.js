@@ -12886,10 +12886,14 @@ function populateLeaderBoard() {
   // Calculate the total wins / losses per player
   var totalWins = {};
   var totalLosses = {};
-  window.GLOBALS.DATA.Matches.contents.forEach(function (match) {
-    var winner = computeWinner(match);
-    var player1 = match['Player 1'];
-    var player2 = match['Player 2'];
+  /*
+  Temporarily disable this for public deployment, so
+  I can keep experimenting with scores, but they won't
+  show up in the public stats:
+   window.GLOBALS.DATA.Matches.contents.forEach(match => {
+    let winner = computeWinner(match);
+    let player1 = match['Player 1'];
+    let player2 = match['Player 2'];
     if (totalWins[player1] === undefined) {
       totalWins[player1] = 0;
       totalLosses[player1] = 0;
@@ -12906,6 +12910,7 @@ function populateLeaderBoard() {
       totalLosses[player1] += 1;
     }
   });
+  */
 
   // Get the seeds for each player
 
@@ -14088,7 +14093,7 @@ window.GLOBALS = {
   POOL_PLAY_DEADLINE: new Date('Apr 5, 2017, 23:59'),
   NOW: new Date(),
   DATA: {}, // this will be populated in getAllTables()
-  DEBUG_MODE: true // set to true to try out different states from the UI
+  DEBUG_MODE: false // set to true to try out different states from the UI
 };
 
 function setupDebugging() {
