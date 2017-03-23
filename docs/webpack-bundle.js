@@ -12844,6 +12844,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+var INPUT_NAMES = ['Player 1 Set 1', 'Player 2 Set 1', 'Player 1 Set 2', 'Player 2 Set 2', 'Player 1 Set 3', 'Player 2 Set 3'];
+
 function populatePlayerLists(containerSelector) {
   var container = d3.select(containerSelector);
   var data = [{
@@ -12882,13 +12884,39 @@ function populateLeaderBoard() {
   });
 
   // Calculate the total wins / losses per player
-  // TODO
+  var totalWins = {};
+  var totalLosses = {};
+  /*
+  Temporarily disable this for public deployment, so
+  I can keep experimenting with scores, but they won't
+  show up in the public stats:
+   window.GLOBALS.DATA.Matches.contents.forEach(match => {
+    let winner = computeWinner(match);
+    let player1 = match['Player 1'];
+    let player2 = match['Player 2'];
+    if (totalWins[player1] === undefined) {
+      totalWins[player1] = 0;
+      totalLosses[player1] = 0;
+    }
+    if (totalWins[player2] === undefined) {
+      totalWins[player2] = 0;
+      totalLosses[player2] = 0;
+    }
+    if (winner === player1) {
+      totalWins[player1] += 1;
+      totalLosses[player2] += 1;
+    } else {
+      totalWins[player2] += 1;
+      totalLosses[player1] += 1;
+    }
+  });
+  */
 
   // Get the seeds for each player
 
   // Assemble the summary stats for each player
   var leaderBoardData = window.GLOBALS.DATA.Players.contents.map(function (player) {
-    return [player['Player Name'], player['Charity'], totalBets[player['Player Name']] || 0, '', 0, 0];
+    return [player['Player Name'], player['Charity'], totalBets[player['Player Name']] || 0, '', totalWins[player['Player Name']] || 0, totalLosses[player['Player Name']] || 0];
   });
 
   // Fill in the table
@@ -12942,12 +12970,113 @@ function handleSubmission(validationFunction, tableName, formElement) {
   }).catch(function () {});
 }
 
+function constructMatchLookup() {
+  var lookup = {};
+  window.GLOBALS.DATA.Matches.contents.forEach(function (match, index) {
+    var player1 = match['Player 1'];
+    var player2 = match['Player 2'];
+    if (!lookup[player1]) {
+      lookup[player1] = [];
+    }
+    if (!lookup[player2]) {
+      lookup[player2] = [];
+    }
+    lookup[player1].push(index);
+    lookup[player2].push(index);
+  });
+  window.GLOBALS.MATCH_LOOKUP = lookup;
+}
+
+function getAllMatches(player1, player2) {
+  if (!window.GLOBALS.MATCH_LOOKUP) {
+    constructMatchLookup();
+  }
+  return (window.GLOBALS.MATCH_LOOKUP[player1] || []).map(function (index) {
+    return window.GLOBALS.DATA.Matches.contents[index];
+  }).filter(function (match) {
+    return match['Player 1'] === player2 || match['Player 2'] === player2;
+  });
+}
+
+function computeWinner(match) {
+  var player1 = 0;
+  var player2 = 0;
+  INPUT_NAMES.forEach(function (n) {
+    match[n] = parseInt(match[n]);
+  });
+  if (match['Player 1 Set 1'] > match['Player 2 Set 1']) {
+    player1 += 1;
+  } else if (match['Player 1 Set 1'] < match['Player 2 Set 1']) {
+    player2 += 1;
+  } else {
+    return null;
+  }
+  if (match['Player 1 Set 2'] > match['Player 2 Set 2']) {
+    player1 += 1;
+  } else if (match['Player 1 Set 2'] < match['Player 2 Set 2']) {
+    player2 += 1;
+  }
+  if (match['Player 1 Set 3'] > match['Player 2 Set 3']) {
+    player1 += 1;
+  } else if (match['Player 1 Set 3'] < match['Player 2 Set 3']) {
+    player2 += 1;
+  }
+
+  if (player1 === player2) {
+    return null;
+  }
+
+  return player1 > player2 ? match['Player 1'] : match['Player 2'];
+}
+
+function enterScore(player1, player2, round) {
+  var modal = (0, _jquery2.default)('#scoreEntryModal');
+  modal.show();
+  modal.find('input').removeClass('error');
+
+  modal.find('#player1').text(player1);
+  modal.find('#player2').text(player2);
+  modal.find('#roundField').text(round);
+
+  modal.find('#cancelButton').on('click', function () {
+    return modal.hide();
+  });
+  modal.find('#submitScoresButton').on('click', function () {
+    handleSubmission(function () {
+      var fakeMatch = {};
+      var badData = false;
+      INPUT_NAMES.forEach(function (n, i) {
+        var element = modal.find('[name="' + n + '"]')[0];
+        fakeMatch[n] = parseInt(element.value);
+        if (i < 2 && isNaN(fakeMatch[n])) {
+          (0, _jquery2.default)(element).addClass('error');
+          displayNotification('You need to play at least one set! ' + 'Usually people play two out of three, but that\'s up to you.');
+          badData = true;
+        }
+      });
+      if (badData) {
+        return Promise.reject();
+      }
+      if (computeWinner(fakeMatch) === null) {
+        modal.find('input').addClass('error');
+        displayNotification('Sorry, no ties allowed... keep playing!');
+        return Promise.reject();
+      } else {
+        return Promise.resolve();
+      }
+    }, 'Matches', modal[0]);
+  });
+}
+
 exports.default = {
   populatePlayerLists: populatePlayerLists,
   populateLeaderBoard: populateLeaderBoard,
   showSpinner: showSpinner,
   handleSubmission: handleSubmission,
-  displayNotification: displayNotification
+  displayNotification: displayNotification,
+  getAllMatches: getAllMatches,
+  computeWinner: computeWinner,
+  enterScore: enterScore
 };
 
 /***/ }),
@@ -13037,7 +13166,8 @@ function submitForm(tableName, formElement) {
 
   Object.keys(FORM_INFO[tableName].fields).forEach(function (originalName) {
     var googleName = FORM_INFO[tableName].fields[originalName];
-    data[googleName] = formElement.find('[name="' + originalName + '"]')[0].value;
+    var domElement = formElement.find('[name="' + originalName + '"]')[0];
+    data[googleName] = domElement.value === undefined ? domElement.textContent : domElement.value;
   });
 
   return new Promise(function (resolve, reject) {
@@ -13105,11 +13235,11 @@ function renderBracket() {
 
 function render() {
   if (window.GLOBALS.NOW < window.GLOBALS.POOL_PLAY_DEADLINE) {
-    (0, _jquery2.default)('svg').hide();
+    (0, _jquery2.default)('#bracketTab svg').hide();
     (0, _jquery2.default)('#bracketTab .waitMessage').show();
     (0, _jquery2.default)('#bracketTab .deadline').text(window.GLOBALS.POOL_PLAY_DEADLINE.toLocaleString());
   } else {
-    (0, _jquery2.default)('svg').show();
+    (0, _jquery2.default)('#bracketTab svg').show();
     (0, _jquery2.default)('#bracketTab .waitMessage').hide();
     renderBracket();
   }
@@ -13139,6 +13269,10 @@ var _jquery = __webpack_require__(0);
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
+var _generalUtils = __webpack_require__(4);
+
+var _generalUtils2 = _interopRequireDefault(_generalUtils);
+
 var _template = __webpack_require__(21);
 
 var _template2 = _interopRequireDefault(_template);
@@ -13155,6 +13289,20 @@ function setup() {
   d3.select('#poolPlayTab').html(_template2.default);
 }
 
+function getCloseBounds(element) {
+  var bounds = {};
+  Array.from(element.children).forEach(function (childElement) {
+    var childBounds = childElement.getBoundingClientRect();
+    bounds.left = Math.min(bounds.left || childBounds.left, childBounds.left);
+    bounds.top = Math.min(bounds.top || childBounds.top, childBounds.top);
+    bounds.right = Math.max(bounds.right || childBounds.right, childBounds.right);
+    bounds.bottom = Math.max(bounds.bottom || childBounds.bottom, childBounds.bottom);
+  });
+  bounds.width = bounds.right - bounds.left;
+  bounds.height = bounds.bottom - bounds.top;
+  return bounds;
+}
+
 function renderPools() {
   var pools = {};
   window.GLOBALS.DATA.Pools.contents.forEach(function (poolAssignment) {
@@ -13165,20 +13313,63 @@ function renderPools() {
   });
 
   var poolPlayTab = d3.select('#poolPlayTab');
-  var bounds = poolPlayTab.node().getBoundingClientRect();
+  var poolPlayTabElement = poolPlayTab.node();
+  var containerBounds = poolPlayTabElement.getBoundingClientRect();
   var svg = poolPlayTab.select('svg');
 
+  // Create groups for each pool
   var poolGroups = svg.selectAll('.poolGroup').data(d3.values(pools));
   poolGroups.exit().remove();
   var poolGroupsEnter = poolGroups.enter().append('g').classed('poolGroup', true);
   poolGroups = poolGroupsEnter.merge(poolGroups);
+
+  poolGroups.attr('transform', 'rotate(-45)');
+
+  // Draw labels for each row / column
+  var xLabels = poolGroups.selectAll('.xLabel').data(function (players) {
+    return players.slice(1).reverse();
+  });
+  xLabels.exit().remove();
+  var xLabelsEnter = xLabels.enter().append('text').classed('xLabel', true);
+  xLabels = xLabelsEnter.merge(xLabels);
+
+  xLabels.text(function (d) {
+    return d;
+  }).attr('text-anchor', 'end').attr('x', -3 * CELL_SIZE / 4).attr('transform', 'rotate(90)').each(function (d, i) {
+    var players = d3.select(this.parentElement).datum();
+    d3.select(this).attr('y', (i - (players.length - 2)) * CELL_SIZE);
+  });
+
+  var yLabels = poolGroups.selectAll('.yLabel').data(function (players) {
+    return players.slice(0, players.length - 1);
+  });
+  yLabels.exit().remove();
+  var yLabelsEnter = yLabels.enter().append('text').classed('yLabel', true);
+  yLabels = yLabelsEnter.merge(yLabels);
+
+  yLabels.text(function (d) {
+    return d;
+  }).attr('x', function () {
+    var players = d3.select(this.parentElement).datum();
+    return (players.length - 1.25) * CELL_SIZE;
+  }).attr('y', function (d, i) {
+    return i * CELL_SIZE;
+  });
 
   // Draw a cell for each pairing in the pool
   var matchCells = poolGroups.selectAll('.matchCell').data(function (players) {
     var pairings = [];
     players.forEach(function (player1, y) {
       players.slice(y + 1).forEach(function (player2, x) {
-        pairings.push({ player1: player1, player2: player2, x: x + y, y: y });
+        var match = _generalUtils2.default.getAllMatches(player1, player2)[0];
+        var winner = match ? _generalUtils2.default.computeWinner(match) : null;
+        pairings.push({
+          player1: player1,
+          player2: player2,
+          x: x + y,
+          y: y,
+          winner: winner
+        });
       });
     });
     return pairings;
@@ -13189,23 +13380,62 @@ function renderPools() {
   var matchCellsEnterText = matchCellsEnter.append('text');
   matchCellsEnterText.append('tspan').attr('y', '-0.25em').text('Enter');
   matchCellsEnterText.append('tspan').attr('y', '0.75em').attr('x', '0em').text('Scores');
+  // Draw an arrow to indicate the winner; by default it points to player1
+  matchCellsEnter.append('path').attr('d', 'M' + CELL_SIZE / 3 + ',0' + 'L' + -CELL_SIZE / 3 + ',0' + 'L' + -CELL_SIZE / 9 + ',' + -CELL_SIZE / 6 + 'L' + -CELL_SIZE / 9 + ',' + CELL_SIZE / 6 + 'L' + -CELL_SIZE / 3 + ',0Z');
   matchCells = matchCellsEnter.merge(matchCells);
 
   matchCells.attr('transform', function (d) {
-    return 'translate(' + CELL_SIZE * d.x + ',' + CELL_SIZE * d.y + ')';
+    var transform = 'translate(' + CELL_SIZE * d.x + ',' + CELL_SIZE * d.y + ')';
+    if (d.winner === null) {
+      transform += ' rotate(45)';
+    } else if (d.winner === d.player1) {
+      transform += ' rotate(180)';
+    } else if (d.winner === d.player2) {
+      transform += ' rotate(90)';
+    }
+    return transform;
+  }).classed('noScores', function (d) {
+    return d.winner === null;
+  }).classed('withScores', function (d) {
+    return d.winner !== null;
   });
   matchCells.select('circle').attr('r', CELL_SIZE / 2);
+  matchCells.on('click', function (d) {
+    if (d.winner === null) {
+      _generalUtils2.default.enterScore(d.player1, d.player2, 'Pool Play');
+    }
+  });
 
-  svg.attr('width', bounds.width).attr('height', bounds.height);
+  // Lay out each pool like text
+  var currentX = 0;
+  var currentY = 0;
+  var maxBottom = 0;
+  var maxRight = 0;
+  poolGroups.each(function () {
+    var rawBounds = getCloseBounds(this);
+    // Push to the next line if we've run out of space (newline-esque)
+    if (currentX + rawBounds.width > containerBounds.width) {
+      currentX = 0;
+      currentY = maxBottom;
+    }
+    var xOffset = currentX - (rawBounds.left - containerBounds.left) - poolPlayTabElement.scrollLeft;
+    var yOffset = currentY - (rawBounds.top - containerBounds.top) - poolPlayTabElement.scrollTop;
+    d3.select(this).attr('transform', 'translate(' + xOffset + ',' + yOffset + ') rotate(-45)');
+    currentX += rawBounds.width;
+    maxRight = Math.max(maxRight, currentX);
+    maxBottom = Math.max(maxBottom, currentY + rawBounds.height);
+  });
+
+  svg.attr('width', maxRight).attr('height', maxBottom);
 }
 
 function render() {
   if (window.GLOBALS.NOW >= window.GLOBALS.SIGNUP_DEADLINE) {
-    (0, _jquery2.default)('svg').show();
+    (0, _jquery2.default)('#poolPlayTab svg').show();
     (0, _jquery2.default)('#poolPlayTab .waitMessage').hide();
     renderPools();
   } else {
-    (0, _jquery2.default)('svg').hide();
+    (0, _jquery2.default)('#poolPlayTab svg').hide();
     (0, _jquery2.default)('#poolPlayTab .waitMessage').show();
     (0, _jquery2.default)('#poolPlayTab .deadline').text(window.GLOBALS.SIGNUP_DEADLINE.toLocaleString());
   }
@@ -13540,7 +13770,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n#poolPlayTab {\n  position: absolute;\n  top: 0px;\n  bottom: 0px;\n  left: 0px;\n  right: 0px;\n  overflow: hidden; }\n  #poolPlayTab .matchCell circle {\n    fill: #D95F02; }\n  #poolPlayTab .matchCell text tspan {\n    fill: #F7F7F7;\n    text-anchor: middle; }\n", ""]);
+exports.push([module.i, "/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n#poolPlayTab {\n  position: absolute;\n  top: 0px;\n  bottom: 0px;\n  left: 0px;\n  right: 0px;\n  overflow: auto; }\n  #poolPlayTab .yLabel,\n  #poolPlayTab .xLabel {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell.noScores circle {\n    fill: #D95F02; }\n  #poolPlayTab .matchCell.noScores text tspan {\n    fill: #F7F7F7;\n    text-anchor: middle; }\n  #poolPlayTab .matchCell.noScores path {\n    display: none; }\n  #poolPlayTab .matchCell.noScores:hover {\n    cursor: pointer; }\n    #poolPlayTab .matchCell.noScores:hover circle {\n      fill: #F7F7F7; }\n    #poolPlayTab .matchCell.noScores:hover text tspan {\n      fill: #525252; }\n  #poolPlayTab .matchCell.withScores circle {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell.withScores text tspan {\n    display: none; }\n  #poolPlayTab .matchCell.withScores path {\n    fill: #D95F02;\n    stroke: #D95F02;\n    stroke-width: 10px;\n    stroke-linejoin: round;\n    stroke-linecap: round; }\n", ""]);
 
 // exports
 
@@ -13596,7 +13826,7 @@ exports = module.exports = __webpack_require__(1)();
 
 
 // module
-exports.push([module.i, "/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n::-webkit-scrollbar {\n  width: 1em; }\n\n/* Track */\n::-webkit-scrollbar-track {\n  background-color: transparent;\n  border: none; }\n\n/* Corner */\n::-webkit-scrollbar-corner {\n  background-color: transparent;\n  border: none; }\n\n/* Handle */\n::-webkit-scrollbar-thumb {\n  -webkit-border-radius: 1em;\n  border-radius: 1em;\n  background: #D95F02; }\n\n::-webkit-scrollbar-thumb:hover {\n  background: #F7F7F7; }\n\n::-webkit-scrollbar-thumb:window-inactive {\n  background: #D95F02; }\n\n@font-face {\n  font-family: 'Wolf-Sans-Regular';\n  src: url(" + __webpack_require__(18) + ") format(\"woff\");\n  font-weight: normal;\n  font-style: normal; }\n\nbody {\n  font-family: \"Wolf-Sans-Regular\", sans-serif;\n  font-weight: 300;\n  color: #D9D9D9;\n  background-color: black; }\n\ninput {\n  font-family: \"Wolf-Sans-Regular\", sans-serif;\n  font-size: 2em;\n  background-color: #F7F7F7;\n  color: #525252;\n  border: 1px solid #252525;\n  outline: none; }\n\ninput.error {\n  border: 4px solid #E7298A; }\n\ninput:focus {\n  border: 4px solid #D95F02; }\n\ninput:disabled + label {\n  /* note: this only works for labels that come immediately AFTER the input */\n  color: #525252; }\n\nh1, h2, h3, h4, h5, h6, b {\n  font-weight: 700; }\n\nb {\n  color: #D95F02; }\n\na {\n  text-decoration: none;\n  color: #D95F02; }\n\n#backgroundImage {\n  position: fixed;\n  bottom: -256px;\n  right: -256px; }\n\n#backgroundOverlay {\n  position: fixed;\n  top: 0px;\n  right: 0px;\n  bottom: 0px;\n  left: 0px;\n  background: radial-gradient(ellipse 1024px 512px at 100% 100%, rgba(0, 0, 0, 0.3) 0px, black 1536px); }\n\n#mainPage {\n  position: absolute;\n  top: 0px;\n  right: 0px;\n  bottom: 0px;\n  left: 0px; }\n  #mainPage #leaderBoard {\n    position: absolute;\n    left: 0px;\n    top: 0px;\n    bottom: 0px;\n    width: calc(33.33333333% - 2em);\n    display: flex;\n    flex-direction: column;\n    padding: 1em;\n    overflow-y: scroll; }\n    #mainPage #leaderBoard table {\n      margin-top: 1em;\n      margin-left: auto;\n      margin-right: auto;\n      border-collapse: collapse; }\n      #mainPage #leaderBoard table thead {\n        margin-bottom: 2em; }\n        #mainPage #leaderBoard table thead td {\n          border: 1px solid #F7F7F7;\n          background-color: #525252;\n          color: #F7F7F7; }\n      #mainPage #leaderBoard table td {\n        padding: 0.25em;\n        text-align: center;\n        white-space: nowrap; }\n        #mainPage #leaderBoard table td.small {\n          white-space: normal;\n          font-size: 0.5em;\n          max-width: 25em; }\n  #mainPage nav {\n    position: absolute;\n    top: 2em;\n    right: 0px;\n    width: calc(66.66666666% - 2em);\n    height: 3.25em;\n    display: flex;\n    justify-content: center; }\n    #mainPage nav .button {\n      margin: 0em 0.5em; }\n      #mainPage nav .button.selected {\n        background-color: #F7F7F7;\n        color: #D95F02; }\n  #mainPage #mainPanel {\n    position: absolute;\n    top: 7.25em;\n    right: 0px;\n    width: calc(66.66666666% - 2em);\n    bottom: 0px;\n    padding: 1em; }\n\n#spinner {\n  position: absolute;\n  left: 0px;\n  top: 0px;\n  bottom: 0px;\n  right: 0px;\n  background-color: rgba(247, 247, 247, 0.5); }\n  #spinner img {\n    position: absolute;\n    width: 10em;\n    height: 10em;\n    top: calc(50% - 5em);\n    left: calc(50% - 5em); }\n\n.selectMenu li span.name {\n  display: block;\n  width: auto;\n  height: auto; }\n\n.selectMenu li span.charity {\n  display: block;\n  width: auto;\n  height: auto;\n  font-size: 0.5em; }\n\n.selectMenu.error {\n  border: 4px solid #E7298A; }\n\n.waitMessage {\n  position: absolute;\n  top: calc(50% - 0.5em);\n  width: calc(100% - 2em);\n  text-align: center; }\n  .waitMessage .deadline {\n    color: #E7298A; }\n\n.messageBlurb {\n  background-color: rgba(247, 247, 247, 0.75);\n  color: #252525; }\n\n#debug {\n  position: absolute;\n  left: 1em;\n  bottom: 6em;\n  padding: 2em 1em; }\n\n#contact {\n  position: absolute;\n  right: 1em;\n  bottom: 1em;\n  padding: 1em; }\n\n#notification {\n  position: absolute;\n  right: 1em;\n  top: 1em;\n  padding: 1em; }\n\n#touchTableHint {\n  position: absolute;\n  left: 0em;\n  top: 19em;\n  padding: 0.5em; }\n", ""]);
+exports.push([module.i, "/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n::-webkit-scrollbar {\n  width: 1em; }\n\n/* Track */\n::-webkit-scrollbar-track {\n  background-color: transparent;\n  border: none; }\n\n/* Corner */\n::-webkit-scrollbar-corner {\n  background-color: transparent;\n  border: none; }\n\n/* Handle */\n::-webkit-scrollbar-thumb {\n  -webkit-border-radius: 1em;\n  border-radius: 1em;\n  background: #D95F02; }\n\n::-webkit-scrollbar-thumb:hover {\n  background: #F7F7F7; }\n\n::-webkit-scrollbar-thumb:window-inactive {\n  background: #D95F02; }\n\n@font-face {\n  font-family: 'Wolf-Sans-Regular';\n  src: url(" + __webpack_require__(18) + ") format(\"woff\");\n  font-weight: normal;\n  font-style: normal; }\n\nbody {\n  font-family: \"Wolf-Sans-Regular\", sans-serif;\n  font-weight: 300;\n  color: #D9D9D9;\n  background-color: black; }\n\ninput {\n  font-family: \"Wolf-Sans-Regular\", sans-serif;\n  font-size: 2em;\n  background-color: #F7F7F7;\n  color: #525252;\n  border: 1px solid #252525;\n  outline: none; }\n\ninput.error {\n  border: 4px solid #E7298A; }\n\ninput:focus {\n  border: 4px solid #D95F02; }\n\ninput:disabled + label {\n  /* note: this only works for labels that come immediately AFTER the input */\n  color: #525252; }\n\nh1, h2, h3, h4, h5, h6, b {\n  font-weight: 700; }\n\nb {\n  color: #D95F02; }\n\na {\n  text-decoration: none;\n  color: #D95F02; }\n\ntable {\n  border-collapse: collapse; }\n  table thead td {\n    border: 1px solid #F7F7F7;\n    background-color: #525252;\n    color: #F7F7F7; }\n  table td {\n    padding: 0.25em;\n    text-align: center;\n    white-space: nowrap; }\n    table td.small {\n      white-space: normal;\n      font-size: 0.5em;\n      max-width: 25em; }\n\n#backgroundImage {\n  position: fixed;\n  bottom: -256px;\n  right: -256px; }\n\n#backgroundOverlay {\n  position: fixed;\n  top: 0px;\n  right: 0px;\n  bottom: 0px;\n  left: 0px;\n  background: radial-gradient(ellipse 1024px 512px at 100% 100%, rgba(0, 0, 0, 0.3) 0px, black 1536px); }\n\n#mainPage {\n  position: absolute;\n  top: 0px;\n  right: 0px;\n  bottom: 0px;\n  left: 0px; }\n  #mainPage #leaderBoard {\n    position: absolute;\n    left: 0px;\n    top: 0px;\n    bottom: 0px;\n    width: calc(33.33333333% - 2em);\n    display: flex;\n    flex-direction: column;\n    padding: 1em;\n    overflow-y: scroll; }\n    #mainPage #leaderBoard table {\n      margin-top: 1em;\n      margin-left: auto;\n      margin-right: auto; }\n  #mainPage nav {\n    position: absolute;\n    top: 2em;\n    right: 0px;\n    width: calc(66.66666666% - 2em);\n    height: 3.25em;\n    display: flex;\n    justify-content: center; }\n    #mainPage nav .button {\n      margin: 0em 0.5em; }\n      #mainPage nav .button.selected {\n        background-color: #F7F7F7;\n        color: #D95F02; }\n  #mainPage #mainPanel {\n    position: absolute;\n    top: 7.25em;\n    right: 0px;\n    width: calc(66.66666666% - 2em);\n    bottom: 0px;\n    padding: 1em; }\n\n#spinner {\n  position: absolute;\n  left: 0px;\n  top: 0px;\n  bottom: 0px;\n  right: 0px;\n  background-color: rgba(247, 247, 247, 0.5); }\n  #spinner img {\n    position: absolute;\n    width: 10em;\n    height: 10em;\n    top: calc(50% - 5em);\n    left: calc(50% - 5em); }\n\n.selectMenu li span.name {\n  display: block;\n  width: auto;\n  height: auto; }\n\n.selectMenu li span.charity {\n  display: block;\n  width: auto;\n  height: auto;\n  font-size: 0.5em; }\n\n.selectMenu.error {\n  border: 4px solid #E7298A; }\n\n.waitMessage {\n  position: absolute;\n  top: calc(50% - 0.5em);\n  width: calc(100% - 2em);\n  text-align: center; }\n  .waitMessage .deadline {\n    color: #E7298A; }\n\n.messageBlurb {\n  background-color: rgba(247, 247, 247, 0.75);\n  color: #252525; }\n\n#debug {\n  position: absolute;\n  left: 1em;\n  bottom: 6em;\n  padding: 2em 1em; }\n\n#contact {\n  position: absolute;\n  right: 1em;\n  bottom: 1em;\n  padding: 1em; }\n\n#notification {\n  position: absolute;\n  right: 1em;\n  top: 1em;\n  padding: 1em; }\n\n#touchTableHint {\n  position: absolute;\n  left: 0em;\n  top: 19em;\n  padding: 0.5em; }\n\n#scoreEntryModal {\n  position: absolute;\n  top: 10em;\n  width: 26em;\n  height: 21em;\n  left: calc(50% - 13em);\n  padding: 1em; }\n  #scoreEntryModal h1 {\n    position: absolute;\n    width: 100%;\n    top: 0.25em;\n    text-align: center; }\n  #scoreEntryModal table {\n    margin-top: 4em;\n    margin-left: auto;\n    margin-right: auto; }\n    #scoreEntryModal table input {\n      width: 4em; }\n  #scoreEntryModal #closeButtons {\n    position: absolute;\n    top: 19em;\n    right: 2em; }\n", ""]);
 
 // exports
 
@@ -13943,7 +14173,10 @@ function getAllTables() {
     tableNames.forEach(function (tableName, index) {
       window.GLOBALS.DATA[tableName] = tables[index];
     });
-    window.GLOBALS.NOW = new Date();
+    if (!window.localStorage.getItem('debuggingDate')) {
+      window.GLOBALS.NOW = new Date();
+    }
+    delete window.GLOBALS.MATCH_LOOKUP;
     // Update the tables every 30 seconds
     window.setTimeout(function () {
       getAllTables();

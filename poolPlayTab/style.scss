@@ -6,15 +6,48 @@
   bottom: 0px;
   left: 0px;
   right: 0px;
-  overflow: hidden;
+  overflow: auto;
 
-  .matchCell {
+  .yLabel,
+  .xLabel {
+    fill: $White;
+  }
+
+  .matchCell.noScores {
     circle {
       fill: $uiAccentColor;
     }
     text tspan {
       fill: $White;
       text-anchor: middle;
+    }
+    path {
+      display: none;
+    }
+
+    &:hover {
+      cursor: pointer;
+      circle {
+        fill: $White;
+      }
+      text tspan {
+        fill: $darkUiColor;
+      }
+    }
+  }
+  .matchCell.withScores {
+    circle {
+      fill: $White;
+    }
+    text tspan {
+      display: none;
+    }
+    path {
+      fill: $uiAccentColor;
+      stroke: $uiAccentColor;
+      stroke-width: 10px;
+      stroke-linejoin: round;
+      stroke-linecap: round;
     }
   }
 }

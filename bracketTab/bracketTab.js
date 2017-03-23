@@ -14,11 +14,11 @@ function renderBracket () {
 
 function render () {
   if (window.GLOBALS.NOW < window.GLOBALS.POOL_PLAY_DEADLINE) {
-    jQuery('svg').hide();
+    jQuery('#bracketTab svg').hide();
     jQuery('#bracketTab .waitMessage').show();
     jQuery('#bracketTab .deadline').text(window.GLOBALS.POOL_PLAY_DEADLINE.toLocaleString());
   } else {
-    jQuery('svg').show();
+    jQuery('#bracketTab svg').show();
     jQuery('#bracketTab .waitMessage').hide();
     renderBracket();
   }

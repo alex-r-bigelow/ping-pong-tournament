@@ -4,6 +4,15 @@ import jQuery from 'jquery';
 import makeSelectMenu from './style/makeSelectMenu';
 import googleSheetsFakeDb from './googleSheetsFakeDb';
 
+const INPUT_NAMES = [
+  'Player 1 Set 1',
+  'Player 2 Set 1',
+  'Player 1 Set 2',
+  'Player 2 Set 2',
+  'Player 1 Set 3',
+  'Player 2 Set 3'
+];
+
 function populatePlayerLists (containerSelector) {
   let container = d3.select(containerSelector);
   let data = [{
@@ -40,7 +49,34 @@ function populateLeaderBoard () {
   });
 
   // Calculate the total wins / losses per player
-  // TODO
+  let totalWins = {};
+  let totalLosses = {};
+  /*
+  Temporarily disable this for public deployment, so
+  I can keep experimenting with scores, but they won't
+  show up in the public stats:
+
+  window.GLOBALS.DATA.Matches.contents.forEach(match => {
+    let winner = computeWinner(match);
+    let player1 = match['Player 1'];
+    let player2 = match['Player 2'];
+    if (totalWins[player1] === undefined) {
+      totalWins[player1] = 0;
+      totalLosses[player1] = 0;
+    }
+    if (totalWins[player2] === undefined) {
+      totalWins[player2] = 0;
+      totalLosses[player2] = 0;
+    }
+    if (winner === player1) {
+      totalWins[player1] += 1;
+      totalLosses[player2] += 1;
+    } else {
+      totalWins[player2] += 1;
+      totalLosses[player1] += 1;
+    }
+  });
+  */
 
   // Get the seeds for each player
 
@@ -51,8 +87,8 @@ function populateLeaderBoard () {
       player['Charity'],
       totalBets[player['Player Name']] || 0,
       '',
-      0,
-      0
+      totalWins[player['Player Name']] || 0,
+      totalLosses[player['Player Name']] || 0
     ];
   });
 
@@ -105,10 +141,108 @@ function handleSubmission (validationFunction, tableName, formElement) {
   }).catch(() => {});
 }
 
+function constructMatchLookup () {
+  let lookup = {};
+  window.GLOBALS.DATA.Matches.contents.forEach((match, index) => {
+    let player1 = match['Player 1'];
+    let player2 = match['Player 2'];
+    if (!lookup[player1]) {
+      lookup[player1] = [];
+    }
+    if (!lookup[player2]) {
+      lookup[player2] = [];
+    }
+    lookup[player1].push(index);
+    lookup[player2].push(index);
+  });
+  window.GLOBALS.MATCH_LOOKUP = lookup;
+}
+
+function getAllMatches (player1, player2) {
+  if (!window.GLOBALS.MATCH_LOOKUP) {
+    constructMatchLookup();
+  }
+  return (window.GLOBALS.MATCH_LOOKUP[player1] || [])
+    .map(index => window.GLOBALS.DATA.Matches.contents[index])
+    .filter(match => match['Player 1'] === player2 || match['Player 2'] === player2);
+}
+
+function computeWinner (match) {
+  let player1 = 0;
+  let player2 = 0;
+  INPUT_NAMES.forEach(n => {
+    match[n] = parseInt(match[n]);
+  });
+  if (match['Player 1 Set 1'] > match['Player 2 Set 1']) {
+    player1 += 1;
+  } else if (match['Player 1 Set 1'] < match['Player 2 Set 1']) {
+    player2 += 1;
+  } else {
+    return null;
+  }
+  if (match['Player 1 Set 2'] > match['Player 2 Set 2']) {
+    player1 += 1;
+  } else if (match['Player 1 Set 2'] < match['Player 2 Set 2']) {
+    player2 += 1;
+  }
+  if (match['Player 1 Set 3'] > match['Player 2 Set 3']) {
+    player1 += 1;
+  } else if (match['Player 1 Set 3'] < match['Player 2 Set 3']) {
+    player2 += 1;
+  }
+
+  if (player1 === player2) {
+    return null;
+  }
+
+  return player1 > player2 ? match['Player 1'] : match['Player 2'];
+}
+
+function enterScore (player1, player2, round) {
+  let modal = jQuery('#scoreEntryModal');
+  modal.show();
+  modal.find('input').removeClass('error');
+
+  modal.find('#player1').text(player1);
+  modal.find('#player2').text(player2);
+  modal.find('#roundField').text(round);
+
+  modal.find('#cancelButton').on('click', () => modal.hide());
+  modal.find('#submitScoresButton').on('click', () => {
+    handleSubmission(() => {
+      let fakeMatch = {};
+      let badData = false;
+      INPUT_NAMES.forEach((n, i) => {
+        let element = modal.find('[name="' + n + '"]')[0];
+        fakeMatch[n] = parseInt(element.value);
+        if (i < 2 && isNaN(fakeMatch[n])) {
+          jQuery(element).addClass('error');
+          displayNotification('You need to play at least one set! ' +
+            'Usually people play two out of three, but that\'s up to you.');
+          badData = true;
+        }
+      });
+      if (badData) {
+        return Promise.reject();
+      }
+      if (computeWinner(fakeMatch) === null) {
+        modal.find('input').addClass('error');
+        displayNotification('Sorry, no ties allowed... keep playing!');
+        return Promise.reject();
+      } else {
+        return Promise.resolve();
+      }
+    }, 'Matches', modal[0]);
+  });
+}
+
 export default {
   populatePlayerLists,
   populateLeaderBoard,
   showSpinner,
   handleSubmission,
-  displayNotification
+  displayNotification,
+  getAllMatches,
+  computeWinner,
+  enterScore
 };

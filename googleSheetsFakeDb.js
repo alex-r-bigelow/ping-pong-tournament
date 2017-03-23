@@ -60,7 +60,8 @@ function submitForm (tableName, formElement) {
 
   Object.keys(FORM_INFO[tableName].fields).forEach(originalName => {
     let googleName = FORM_INFO[tableName].fields[originalName];
-    data[googleName] = formElement.find('[name="' + originalName + '"]')[0].value;
+    let domElement = formElement.find('[name="' + originalName + '"]')[0];
+    data[googleName] = domElement.value === undefined ? domElement.textContent : domElement.value;
   });
 
   return new Promise((resolve, reject) => {
