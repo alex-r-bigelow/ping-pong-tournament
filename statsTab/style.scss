@@ -18,8 +18,7 @@
   }
   #linkLayer {
     path {
-      stroke: $White;
-      stroke-width: 1px;
+      fill: rgba($White, 0.5);
     }
   }
 }

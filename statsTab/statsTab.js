@@ -1,6 +1,8 @@
 import * as d3 from 'd3';
 import jQuery from 'jquery';
 
+import generalUtils from '../generalUtils';
+
 import template from './template.html';
 import './style.scss';
 
@@ -49,9 +51,12 @@ function updateGraph (date) {
 
   window.GLOBALS.DATA.Matches.contents.forEach(match => {
     if (new Date(match['Timestamp']) <= date) {
+      let player1 = match['Player 1'];
+      let player2 = match['Player 2'];
+      let winner = generalUtils.computeWinner(match);
       graph.links.push({
-        source: match['Player 1'],
-        target: match['Player 2']
+        target: winner === player1 ? player2 : player1,
+        source: winner
       });
     }
   });
@@ -93,9 +98,63 @@ function renderLinks (svg, graph) {
   return links;
 }
 
+/*
 function computeLinkPath (d) {
   return 'M' + d.source.x + ',' + d.source.y +
          'L' + d.target.x + ',' + d.target.y;
+}
+*/
+
+function drawPointyArc (d) {
+  let dx = d.target.x - d.source.x;
+  let dy = d.target.y - d.source.y;
+  let arcRadius = 20 * dx / Math.abs(dx);
+  let theta;
+  let edgePoint;
+  let front;
+  let back;
+  let arc;
+
+  if (dx === 0) {
+    if (dy >= 0) {
+      theta = Math.PI;
+    } else {
+      theta = -Math.PI;
+    }
+    edgePoint = {
+      x: 0,
+      y: d.source.r
+    };
+  } else {
+    theta = Math.atan((d.target.y - d.source.y) / (d.target.x - d.source.x)) + Math.PI / 2;
+    edgePoint = {
+      x: d.source.r * Math.cos(theta),
+      y: d.source.r * Math.sin(theta)
+    };
+  }
+  front = {
+    x: d.source.x + edgePoint.x,
+    y: d.source.y + edgePoint.y
+  };
+  back = {
+    x: d.source.x - edgePoint.x,
+    y: d.source.y - edgePoint.y
+  };
+  arc = {
+    x: (d.source.x + d.target.x) / 2 + arcRadius * Math.cos(theta),
+    y: (d.source.y + d.target.y) / 2 + arcRadius * Math.sin(theta)
+  };
+  return 'M' +
+    front.x + ',' +
+    front.y + 'Q' +
+    arc.x + ',' +
+    arc.y + ',' +
+    d.target.x + ',' +
+    d.target.y + 'Q' +
+    arc.x + ',' +
+    arc.y + ',' +
+    back.x + ',' +
+    back.y + 'Z';
 }
 
 function boundingBoxForce (bounds) {
@@ -149,13 +208,13 @@ function render () {
       .velocityDecay(0.01)
       .force('link', d3.forceLink()
         .id(d => d.id)
-        .distance(d => d.source.r + d.target.r + 40))
+        .distance(d => d.source.r + d.target.r + 60))
       .force('center', d3.forceCenter(bounds.width / 2, bounds.height / 2))
       .force('collision', d3.forceCollide().radius(d => d.r))
       .force('boundingBox', boundingBoxForce(bounds))
       .on('tick', () => {
         nodes.attr('transform', d => 'translate(' + d.x + ',' + d.y + ')');
-        links.attr('d', computeLinkPath);
+        links.attr('d', drawPointyArc);
       });
   }
 
