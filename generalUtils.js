@@ -51,10 +51,6 @@ function populateLeaderBoard () {
   // Calculate the total wins / losses per player
   let totalWins = {};
   let totalLosses = {};
-  /*
-  Temporarily disable this for public deployment, so
-  I can keep experimenting with scores, but they won't
-  show up in the public stats:
 
   window.GLOBALS.DATA.Matches.contents.forEach(match => {
     let winner = computeWinner(match);
@@ -76,7 +72,6 @@ function populateLeaderBoard () {
       totalLosses[player1] += 1;
     }
   });
-  */
 
   // Get the seeds for each player
 

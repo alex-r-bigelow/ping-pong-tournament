@@ -8,19 +8,44 @@ function setup () {
   jQuery('#statsTab').html(template);
 }
 
-function getGraph (date) {
-  let graph = {
-    nodes: [],
-    links: []
-  };
+let graph = {
+  nodes: [],
+  links: [],
+  nodeLookup: {}
+};
+
+function updateGraph (date) {
+  let newNodes = [];
+  let newNodeLookup = {};
+
+  // Create a node for each player that has signed up
+  // on or before date
 
   window.GLOBALS.DATA.Players.contents.forEach(player => {
     if (new Date(player['Timestamp']) <= date) {
-      graph.nodes.push({
-        id: player['Player Name']
-      });
+      let playerName = player['Player Name'];
+      newNodeLookup[playerName] = newNodes.length;
+      if (graph.nodeLookup[playerName]) {
+        // keep the old node, as it will have x, y, and
+        // velocity parameters from before, and we want the
+        // switch to be smooth
+        newNodes.push(graph.nodes[graph.nodeLookup[playerName]]);
+      } else {
+        newNodes.push({
+          id: playerName
+        });
+      }
     }
   });
+
+  graph.nodes = newNodes;
+  graph.nodeLookup = newNodeLookup;
+
+  graph.links = [];
+
+  // Create a link for each game that has been entered
+  // on or before date (don't have to keep the old links,
+  // as d3 stores all the graph drawing stuff on the nodes)
 
   window.GLOBALS.DATA.Matches.contents.forEach(match => {
     if (new Date(match['Timestamp']) <= date) {
@@ -102,6 +127,8 @@ function boundingBoxForce (bounds) {
   return force;
 }
 
+let simulation;
+
 function render () {
   let statsTab = d3.select('#statsTab');
   let bounds = statsTab.node().getBoundingClientRect();
@@ -109,27 +136,31 @@ function render () {
   svg.attr('width', bounds.width)
     .attr('height', bounds.height);
 
-  let graph = getGraph(new Date()); // todo: pass in a date from a slider
+  let graph = updateGraph(new Date()); // todo: pass in a date from a slider
 
   let nodes = renderNodes(svg, graph);
   let links = renderLinks(svg, graph);
 
-  let simulation = d3.forceSimulation();
+  if (!simulation) {
+    // First time rendering; set up the simulation
+    simulation = d3.forceSimulation()
+      .alphaTarget(1)
+      .alphaMin(0)
+      .velocityDecay(0.01)
+      .force('link', d3.forceLink()
+        .id(d => d.id)
+        .distance(d => d.source.r + d.target.r + 40))
+      .force('center', d3.forceCenter(bounds.width / 2, bounds.height / 2))
+      .force('collision', d3.forceCollide().radius(d => d.r))
+      .force('boundingBox', boundingBoxForce(bounds))
+      .on('tick', () => {
+        nodes.attr('transform', d => 'translate(' + d.x + ',' + d.y + ')');
+        links.attr('d', computeLinkPath);
+      });
+  }
+
   simulation.nodes(graph.nodes);
-  simulation.alphaTarget(1);
-  simulation.alphaMin(0);
-  simulation.velocityDecay(0.01);
-  simulation.force('link', d3.forceLink()
-    .id(d => d.id)
-    .distance(d => d.source.r + d.target.r + 40)
-    .links(graph.links));
-  simulation.force('center', d3.forceCenter(bounds.width / 2, bounds.height / 2));
-  simulation.force('collision', d3.forceCollide().radius(d => d.r));
-  simulation.force('boundingBox', boundingBoxForce(bounds));
-  simulation.on('tick', () => {
-    nodes.attr('transform', d => 'translate(' + d.x + ',' + d.y + ')');
-    links.attr('d', computeLinkPath);
-  });
+  simulation.force('link').links(graph.links);
 }
 
 export default {
