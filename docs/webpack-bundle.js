@@ -13706,6 +13706,33 @@ function getAllMatches(player1, player2) {
   });
 }
 
+function splitName(playerName) {
+  // Split the name into two roughly equal-length lines
+  var firstName = playerName.slice(0, playerName.length / 2);
+  var lastName = playerName.slice(playerName.length / 2);
+  if (firstName[firstName.length - 1] === ' ') {
+    firstName = firstName.trim();
+  } else if (lastName[0] === ' ') {
+    lastName = lastName.trim();
+  } else {
+    firstName = firstName.split(' ');
+    lastName = lastName.split(' ');
+    var middleName = firstName.pop() + lastName.splice(0, 1);
+    firstName = firstName.join(' ');
+    lastName = lastName.join(' ');
+
+    if ((firstName + middleName).length < (lastName + middleName).length) {
+      firstName = firstName + ' ' + middleName;
+    } else {
+      lastName = middleName + ' ' + lastName;
+    }
+  }
+  return {
+    firstName: firstName,
+    lastName: lastName
+  };
+}
+
 function computeWinner(match) {
   var player1 = 0;
   var player2 = 0;
@@ -13784,7 +13811,8 @@ exports.default = {
   displayNotification: displayNotification,
   getAllMatches: getAllMatches,
   computeWinner: computeWinner,
-  enterScore: enterScore
+  enterScore: enterScore,
+  splitName: splitName
 };
 
 /***/ }),
@@ -14086,28 +14114,24 @@ function renderPools() {
   var matchCellsEnter = matchCells.enter().append('g').classed('matchCell', true);
   matchCellsEnter.append('circle');
   var matchCellsEnterText = matchCellsEnter.append('text');
-  matchCellsEnterText.append('tspan').attr('y', '-0.25em').text('Enter');
-  matchCellsEnterText.append('tspan').attr('y', '0.75em').attr('x', '0em').text('Scores');
-  // Draw an arrow to indicate the winner; by default it points to player1
-  matchCellsEnter.append('path').attr('d', 'M' + CELL_SIZE / 3 + ',0' + 'L' + -CELL_SIZE / 3 + ',0' + 'L' + -CELL_SIZE / 9 + ',' + -CELL_SIZE / 6 + 'L' + -CELL_SIZE / 9 + ',' + CELL_SIZE / 6 + 'L' + -CELL_SIZE / 3 + ',0Z');
+  matchCellsEnterText.append('tspan').classed('firstName', true).attr('y', '-0.25em');
+  matchCellsEnterText.append('tspan').classed('lastName', true).attr('y', '0.75em').attr('x', '0em');
   matchCells = matchCellsEnter.merge(matchCells);
 
   matchCells.attr('transform', function (d) {
-    var transform = 'translate(' + CELL_SIZE * d.x + ',' + CELL_SIZE * d.y + ')';
-    if (d.winner === null) {
-      transform += ' rotate(45)';
-    } else if (d.winner === d.player1) {
-      transform += ' rotate(180)';
-    } else if (d.winner === d.player2) {
-      transform += ' rotate(90)';
-    }
-    return transform;
+    return 'translate(' + CELL_SIZE * d.x + ',' + CELL_SIZE * d.y + ') rotate(45)';
   }).classed('noScores', function (d) {
     return d.winner === null;
   }).classed('withScores', function (d) {
     return d.winner !== null;
   });
   matchCells.select('circle').attr('r', CELL_SIZE / 2);
+  matchCells.select('.firstName').text(function (d) {
+    return d.winner ? _generalUtils2.default.splitName(d.winner).firstName : 'Enter';
+  });
+  matchCells.select('.lastName').text(function (d) {
+    return d.winner ? _generalUtils2.default.splitName(d.winner).lastName : 'Scores';
+  });
   matchCells.on('click', function (d) {
     if (d.winner === null) {
       _generalUtils2.default.enterScore(d.player1, d.player2, 'Pool Play');
@@ -14318,9 +14342,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function setup() {
-  (0, _jquery2.default)('#statsTab').html(_template2.default);
-}
+var CELL_SIZE = 80;
 
 var graph = {
   nodes: [],
@@ -14328,6 +14350,10 @@ var graph = {
   nodeLookup: {}
 };
 var simulation = void 0;
+
+function setup() {
+  (0, _jquery2.default)('#statsTab').html(_template2.default);
+}
 
 function updateGraph(date) {
   var newNodes = [];
@@ -14346,34 +14372,8 @@ function updateGraph(date) {
         // switch to be smooth
         newNodes.push(graph.nodes[graph.nodeLookup[playerName]]);
       } else {
-        var newNode = {
-          id: playerName
-        };
-
-        // Split the name into two roughly equal-length lines
-        var firstName = playerName.slice(0, playerName.length / 2);
-        var lastName = playerName.slice(playerName.length / 2);
-        if (firstName[firstName.length - 1] === ' ') {
-          firstName = firstName.trim();
-        } else if (lastName[0] === ' ') {
-          lastName = lastName.trim();
-        } else {
-          firstName = firstName.split(' ');
-          lastName = lastName.split(' ');
-          var middleName = firstName.pop() + lastName.splice(0, 1);
-          firstName = firstName.join(' ');
-          lastName = lastName.join(' ');
-
-          if ((firstName + middleName).length < (lastName + middleName).length) {
-            firstName = firstName + ' ' + middleName;
-          } else {
-            lastName = middleName + ' ' + lastName;
-          }
-        }
-
-        newNode.firstName = firstName;
-        newNode.lastName = lastName;
-
+        var newNode = _generalUtils2.default.splitName(playerName);
+        newNode.id = playerName;
         newNodes.push(newNode);
       }
     }
@@ -14431,24 +14431,13 @@ function renderNodes(svg, graph) {
   nodesEnterText.append('tspan').classed('lastName', true);
   nodes = nodesEnter.merge(nodes);
 
-  var maxRadius = 0;
-
   nodes.select('.firstName').text(function (d) {
     return d.firstName;
   }).attr('y', '-0.25em');
   nodes.select('.lastName').text(function (d) {
     return d.lastName;
   }).attr('y', '0.75em').attr('x', '0em');
-  nodes.select('circle').each(function (d) {
-    // First compute the radius for every name
-    var bounds = this.parentNode.getElementsByTagName('text')[0].getBoundingClientRect();
-    d.r = Math.max(bounds.width, bounds.height) / 2 + 5;
-    maxRadius = Math.max(maxRadius, d.r);
-    return d.r;
-  }).each(function (d) {
-    // Then apply the largest radius to all circles
-    d.r = maxRadius;
-  }).attr('r', maxRadius);
+  nodes.select('circle').attr('r', CELL_SIZE / 2);
 
   return nodes;
 }
@@ -14487,13 +14476,13 @@ function drawPointyArc(d) {
     }
     edgePoint = {
       x: 0,
-      y: d.source.r
+      y: CELL_SIZE / 2
     };
   } else {
     theta = Math.atan((d.target.y - d.source.y) / (d.target.x - d.source.x)) + Math.PI / 2;
     edgePoint = {
-      x: d.source.r * Math.cos(theta),
-      y: d.source.r * Math.sin(theta)
+      x: CELL_SIZE / 2 * Math.cos(theta),
+      y: CELL_SIZE / 2 * Math.sin(theta)
     };
   }
   front = {
@@ -14516,20 +14505,20 @@ function boundingBoxForce(bounds) {
 
   function force() {
     nodes.forEach(function (node) {
-      if (node.x - node.r <= 0) {
-        node.x = node.r;
+      if (node.x - CELL_SIZE / 2 <= 0) {
+        node.x = CELL_SIZE / 2;
         node.vx = Math.abs(node.vx);
       }
-      if (node.y - node.r <= 0) {
-        node.y = node.r;
+      if (node.y - CELL_SIZE / 2 <= 0) {
+        node.y = CELL_SIZE / 2;
         node.vy = Math.abs(node.vy);
       }
-      if (node.x + node.r >= bounds.width) {
-        node.x = bounds.width - node.r;
+      if (node.x + CELL_SIZE / 2 >= bounds.width) {
+        node.x = bounds.width - CELL_SIZE / 2;
         node.vx = -Math.abs(node.vx);
       }
-      if (node.y + node.r >= bounds.height) {
-        node.y = bounds.height - node.r;
+      if (node.y + CELL_SIZE / 2 >= bounds.height) {
+        node.y = bounds.height - CELL_SIZE / 2;
         node.vy = -Math.abs(node.vy);
       }
     });
@@ -14556,10 +14545,8 @@ function render() {
     simulation = d3.forceSimulation().velocityDecay(0.05).force('link', d3.forceLink().id(function (d) {
       return d.id;
     }).distance(function (d) {
-      return d.source.r + d.target.r + 60;
-    })).force('center', d3.forceCenter(bounds.width / 2, bounds.height / 2)).force('collision', d3.forceCollide().radius(function (d) {
-      return d.r;
-    })).force('boundingBox', boundingBoxForce(bounds)).on('tick', function () {
+      return CELL_SIZE + 60;
+    })).force('center', d3.forceCenter(bounds.width / 2, bounds.height / 2)).force('collision', d3.forceCollide().radius(CELL_SIZE / 2)).force('boundingBox', boundingBoxForce(bounds)).on('tick', function () {
       nodes.attr('transform', function (d) {
         return 'translate(' + d.x + ',' + d.y + ')';
       });
@@ -14732,7 +14719,7 @@ exports = module.exports = __webpack_require__(2)();
 
 
 // module
-exports.push([module.i, "/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n#poolPlayTab {\n  position: absolute;\n  top: 0px;\n  bottom: 0px;\n  left: 0px;\n  right: 0px;\n  overflow: auto; }\n  #poolPlayTab .yLabel,\n  #poolPlayTab .xLabel {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell.noScores circle {\n    fill: #D95F02; }\n  #poolPlayTab .matchCell.noScores text tspan {\n    fill: #F7F7F7;\n    text-anchor: middle; }\n  #poolPlayTab .matchCell.noScores path {\n    display: none; }\n  #poolPlayTab .matchCell.noScores:hover {\n    cursor: pointer; }\n    #poolPlayTab .matchCell.noScores:hover circle {\n      fill: #F7F7F7; }\n    #poolPlayTab .matchCell.noScores:hover text tspan {\n      fill: #525252; }\n  #poolPlayTab .matchCell.withScores circle {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell.withScores text tspan {\n    display: none; }\n  #poolPlayTab .matchCell.withScores path {\n    fill: #D95F02;\n    stroke: #D95F02;\n    stroke-width: 10px;\n    stroke-linejoin: round;\n    stroke-linecap: round; }\n", ""]);
+exports.push([module.i, "/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n#poolPlayTab {\n  position: absolute;\n  top: 0px;\n  bottom: 0px;\n  left: 0px;\n  right: 0px;\n  overflow: auto; }\n  #poolPlayTab .yLabel,\n  #poolPlayTab .xLabel {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell text tspan {\n    text-anchor: middle;\n    font-size: 0.75em; }\n  #poolPlayTab .matchCell.noScores circle {\n    fill: #D95F02; }\n  #poolPlayTab .matchCell.noScores text tspan {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell:hover {\n    cursor: pointer; }\n    #poolPlayTab .matchCell:hover circle {\n      fill: #F7F7F7; }\n    #poolPlayTab .matchCell:hover text tspan {\n      fill: #525252; }\n  #poolPlayTab .matchCell.withScores circle {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell.withScores text tspan {\n    fill: #D95F02; }\n", ""]);
 
 // exports
 
