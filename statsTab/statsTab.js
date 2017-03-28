@@ -6,9 +6,7 @@ import generalUtils from '../generalUtils';
 import template from './template.html';
 import './style.scss';
 
-function setup () {
-  jQuery('#statsTab').html(template);
-}
+const CELL_SIZE = 80;
 
 let graph = {
   nodes: [],
@@ -16,6 +14,10 @@ let graph = {
   nodeLookup: {}
 };
 let simulation;
+
+function setup () {
+  jQuery('#statsTab').html(template);
+}
 
 function updateGraph (date) {
   let newNodes = [];
@@ -34,34 +36,8 @@ function updateGraph (date) {
         // switch to be smooth
         newNodes.push(graph.nodes[graph.nodeLookup[playerName]]);
       } else {
-        let newNode = {
-          id: playerName
-        };
-
-        // Split the name into two roughly equal-length lines
-        let firstName = playerName.slice(0, playerName.length / 2);
-        let lastName = playerName.slice(playerName.length / 2);
-        if (firstName[firstName.length - 1] === ' ') {
-          firstName = firstName.trim();
-        } else if (lastName[0] === ' ') {
-          lastName = lastName.trim();
-        } else {
-          firstName = firstName.split(' ');
-          lastName = lastName.split(' ');
-          let middleName = firstName.pop() + lastName.splice(0, 1);
-          firstName = firstName.join(' ');
-          lastName = lastName.join(' ');
-
-          if ((firstName + middleName).length < (lastName + middleName).length) {
-            firstName = firstName + ' ' + middleName;
-          } else {
-            lastName = middleName + ' ' + lastName;
-          }
-        }
-
-        newNode.firstName = firstName;
-        newNode.lastName = lastName;
-
+        let newNode = generalUtils.splitName(playerName);
+        newNode.id = playerName;
         newNodes.push(newNode);
       }
     }
@@ -124,23 +100,12 @@ function renderNodes (svg, graph) {
   nodesEnterText.append('tspan').classed('lastName', true);
   nodes = nodesEnter.merge(nodes);
 
-  let maxRadius = 0;
-
   nodes.select('.firstName').text(d => d.firstName)
     .attr('y', '-0.25em');
   nodes.select('.lastName').text(d => d.lastName)
     .attr('y', '0.75em')
     .attr('x', '0em');
-  nodes.select('circle').each(function (d) {
-    // First compute the radius for every name
-    let bounds = this.parentNode.getElementsByTagName('text')[0].getBoundingClientRect();
-    d.r = Math.max(bounds.width, bounds.height) / 2 + 5;
-    maxRadius = Math.max(maxRadius, d.r);
-    return d.r;
-  }).each(d => {
-    // Then apply the largest radius to all circles
-    d.r = maxRadius;
-  }).attr('r', maxRadius);
+  nodes.select('circle').attr('r', CELL_SIZE / 2);
 
   return nodes;
 }
@@ -180,13 +145,13 @@ function drawPointyArc (d) {
     }
     edgePoint = {
       x: 0,
-      y: d.source.r
+      y: CELL_SIZE / 2
     };
   } else {
     theta = Math.atan((d.target.y - d.source.y) / (d.target.x - d.source.x)) + Math.PI / 2;
     edgePoint = {
-      x: d.source.r * Math.cos(theta),
-      y: d.source.r * Math.sin(theta)
+      x: CELL_SIZE / 2 * Math.cos(theta),
+      y: CELL_SIZE / 2 * Math.sin(theta)
     };
   }
   front = {
@@ -219,20 +184,20 @@ function boundingBoxForce (bounds) {
 
   function force () {
     nodes.forEach(node => {
-      if (node.x - node.r <= 0) {
-        node.x = node.r;
+      if (node.x - CELL_SIZE / 2 <= 0) {
+        node.x = CELL_SIZE / 2;
         node.vx = Math.abs(node.vx);
       }
-      if (node.y - node.r <= 0) {
-        node.y = node.r;
+      if (node.y - CELL_SIZE / 2 <= 0) {
+        node.y = CELL_SIZE / 2;
         node.vy = Math.abs(node.vy);
       }
-      if (node.x + node.r >= bounds.width) {
-        node.x = bounds.width - node.r;
+      if (node.x + CELL_SIZE / 2 >= bounds.width) {
+        node.x = bounds.width - CELL_SIZE / 2;
         node.vx = -Math.abs(node.vx);
       }
-      if (node.y + node.r >= bounds.height) {
-        node.y = bounds.height - node.r;
+      if (node.y + CELL_SIZE / 2 >= bounds.height) {
+        node.y = bounds.height - CELL_SIZE / 2;
         node.vy = -Math.abs(node.vy);
       }
     });
@@ -261,9 +226,9 @@ function render () {
       .velocityDecay(0.05)
       .force('link', d3.forceLink()
         .id(d => d.id)
-        .distance(d => d.source.r + d.target.r + 60))
+        .distance(d => CELL_SIZE + 60))
       .force('center', d3.forceCenter(bounds.width / 2, bounds.height / 2))
-      .force('collision', d3.forceCollide().radius(d => d.r))
+      .force('collision', d3.forceCollide().radius(CELL_SIZE / 2))
       .force('boundingBox', boundingBoxForce(bounds))
       .on('tick', () => {
         nodes.attr('transform', d => 'translate(' + d.x + ',' + d.y + ')');

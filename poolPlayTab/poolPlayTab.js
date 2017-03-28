@@ -102,35 +102,26 @@ function renderPools () {
   matchCellsEnter.append('circle');
   let matchCellsEnterText = matchCellsEnter.append('text');
   matchCellsEnterText.append('tspan')
-    .attr('y', '-0.25em')
-    .text('Enter');
+    .classed('firstName', true)
+    .attr('y', '-0.25em');
   matchCellsEnterText.append('tspan')
+    .classed('lastName', true)
     .attr('y', '0.75em')
-    .attr('x', '0em')
-    .text('Scores');
-  // Draw an arrow to indicate the winner; by default it points to player1
-  matchCellsEnter.append('path')
-    .attr('d', 'M' + CELL_SIZE / 3 + ',0' +
-               'L' + (-CELL_SIZE / 3) + ',0' +
-               'L' + (-CELL_SIZE / 9) + ',' + (-CELL_SIZE / 6) +
-               'L' + (-CELL_SIZE / 9) + ',' + (CELL_SIZE / 6) +
-               'L' + (-CELL_SIZE / 3) + ',0Z');
+    .attr('x', '0em');
   matchCells = matchCellsEnter.merge(matchCells);
 
   matchCells.attr('transform', d => {
-    let transform = 'translate(' + (CELL_SIZE * d.x) + ',' + (CELL_SIZE * d.y) + ')';
-    if (d.winner === null) {
-      transform += ' rotate(45)';
-    } else if (d.winner === d.player1) {
-      transform += ' rotate(180)';
-    } else if (d.winner === d.player2) {
-      transform += ' rotate(90)';
-    }
-    return transform;
+    return 'translate(' +
+      (CELL_SIZE * d.x) + ',' + (CELL_SIZE * d.y) +
+      ') rotate(45)';
   }).classed('noScores', d => d.winner === null)
     .classed('withScores', d => d.winner !== null);
   matchCells.select('circle')
     .attr('r', CELL_SIZE / 2);
+  matchCells.select('.firstName')
+    .text(d => d.winner ? generalUtils.splitName(d.winner).firstName : 'Enter');
+  matchCells.select('.lastName')
+    .text(d => d.winner ? generalUtils.splitName(d.winner).lastName : 'Scores');
   matchCells.on('click', d => {
     if (d.winner === null) {
       generalUtils.enterScore(d.player1, d.player2, 'Pool Play');

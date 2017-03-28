@@ -162,6 +162,33 @@ function getAllMatches (player1, player2) {
     .filter(match => match['Player 1'] === player2 || match['Player 2'] === player2);
 }
 
+function splitName (playerName) {
+  // Split the name into two roughly equal-length lines
+  let firstName = playerName.slice(0, playerName.length / 2);
+  let lastName = playerName.slice(playerName.length / 2);
+  if (firstName[firstName.length - 1] === ' ') {
+    firstName = firstName.trim();
+  } else if (lastName[0] === ' ') {
+    lastName = lastName.trim();
+  } else {
+    firstName = firstName.split(' ');
+    lastName = lastName.split(' ');
+    let middleName = firstName.pop() + lastName.splice(0, 1);
+    firstName = firstName.join(' ');
+    lastName = lastName.join(' ');
+
+    if ((firstName + middleName).length < (lastName + middleName).length) {
+      firstName = firstName + ' ' + middleName;
+    } else {
+      lastName = middleName + ' ' + lastName;
+    }
+  }
+  return {
+    firstName,
+    lastName
+  };
+}
+
 function computeWinner (match) {
   let player1 = 0;
   let player2 = 0;
@@ -239,5 +266,6 @@ export default {
   displayNotification,
   getAllMatches,
   computeWinner,
-  enterScore
+  enterScore,
+  splitName
 };
