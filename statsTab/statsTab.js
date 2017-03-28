@@ -15,6 +15,7 @@ let graph = {
   links: [],
   nodeLookup: {}
 };
+let simulation;
 
 function updateGraph (date) {
   let newNodes = [];
@@ -33,9 +34,35 @@ function updateGraph (date) {
         // switch to be smooth
         newNodes.push(graph.nodes[graph.nodeLookup[playerName]]);
       } else {
-        newNodes.push({
+        let newNode = {
           id: playerName
-        });
+        };
+
+        // Split the name into two roughly equal-length lines
+        let firstName = playerName.slice(0, playerName.length / 2);
+        let lastName = playerName.slice(playerName.length / 2);
+        if (firstName[firstName.length - 1] === ' ') {
+          firstName = firstName.trim();
+        } else if (lastName[0] === ' ') {
+          lastName = lastName.trim();
+        } else {
+          firstName = firstName.split(' ');
+          lastName = lastName.split(' ');
+          let middleName = firstName.pop() + lastName.splice(0, 1);
+          firstName = firstName.join(' ');
+          lastName = lastName.join(' ');
+
+          if ((firstName + middleName).length < (lastName + middleName).length) {
+            firstName = firstName + ' ' + middleName;
+          } else {
+            lastName = middleName + ' ' + lastName;
+          }
+        }
+
+        newNode.firstName = firstName;
+        newNode.lastName = lastName;
+
+        newNodes.push(newNode);
       }
     }
   });
@@ -63,27 +90,57 @@ function updateGraph (date) {
   return graph;
 }
 
+function startDraggingNode (d) {
+  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+  d3.select(this).classed('dragging', true);
+}
+
+function dragNode (d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
+
+function finishDraggingNode (d) {
+  if (!d3.event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+  d3.select(this).classed('dragging', false);
+}
+
 function renderNodes (svg, graph) {
   let nodes = svg.select('#nodeLayer').selectAll('g')
     .data(graph.nodes);
   nodes.exit().remove();
-  let nodesEnter = nodes.enter().append('g');
+  let nodesEnter = nodes.enter().append('g')
+    .call(d3.drag()
+      .on('start', startDraggingNode)
+      .on('drag', dragNode)
+      .on('end', finishDraggingNode));
   nodesEnter.append('circle');
   let nodesEnterText = nodesEnter.append('text');
   nodesEnterText.append('tspan').classed('firstName', true);
   nodesEnterText.append('tspan').classed('lastName', true);
   nodes = nodesEnter.merge(nodes);
 
-  nodes.select('.firstName').text(d => d.id.split(' ')[0])
+  let maxRadius = 0;
+
+  nodes.select('.firstName').text(d => d.firstName)
     .attr('y', '-0.25em');
-  nodes.select('.lastName').text(d => d.id.split(' ').slice(1).join(' '))
+  nodes.select('.lastName').text(d => d.lastName)
     .attr('y', '0.75em')
     .attr('x', '0em');
-  nodes.select('circle').attr('r', function (d) {
+  nodes.select('circle').each(function (d) {
+    // First compute the radius for every name
     let bounds = this.parentNode.getElementsByTagName('text')[0].getBoundingClientRect();
     d.r = Math.max(bounds.width, bounds.height) / 2 + 5;
+    maxRadius = Math.max(maxRadius, d.r);
     return d.r;
-  });
+  }).each(d => {
+    // Then apply the largest radius to all circles
+    d.r = maxRadius;
+  }).attr('r', maxRadius);
 
   return nodes;
 }
@@ -108,7 +165,7 @@ function computeLinkPath (d) {
 function drawPointyArc (d) {
   let dx = d.target.x - d.source.x;
   let dy = d.target.y - d.source.y;
-  let arcRadius = 20 * dx / Math.abs(dx);
+  let arcRadius = 80 * dx / Math.abs(dx);
   let theta;
   let edgePoint;
   let front;
@@ -186,8 +243,6 @@ function boundingBoxForce (bounds) {
   return force;
 }
 
-let simulation;
-
 function render () {
   let statsTab = d3.select('#statsTab');
   let bounds = statsTab.node().getBoundingClientRect();
@@ -203,9 +258,7 @@ function render () {
   if (!simulation) {
     // First time rendering; set up the simulation
     simulation = d3.forceSimulation()
-      .alphaTarget(1)
-      .alphaMin(0)
-      .velocityDecay(0.01)
+      .velocityDecay(0.05)
       .force('link', d3.forceLink()
         .id(d => d.id)
         .distance(d => d.source.r + d.target.r + 60))
