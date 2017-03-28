@@ -7,19 +7,32 @@
   right: 1em;
   bottom: 1em;
 
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
   #nodeLayer {
-    circle {
-      fill: $uiAccentColor;
-    }
-    text tspan {
-      fill: $White;
-      text-anchor: middle;
+    g {
+      cursor: -webkit-grab;
+      cursor: grab;
+      &.dragging {
+        cursor: -webkit-grabbing;
+        cursor: grabbing;
+      }
+      circle {
+        fill: $uiAccentColor;
+      }
+      text tspan {
+        fill: $White;
+        text-anchor: middle;
+        font-size: 0.75em;
+      }
     }
   }
   #linkLayer {
     path {
-      stroke: $White;
-      stroke-width: 1px;
+      fill: rgba($White, 0.5);
     }
   }
 }
