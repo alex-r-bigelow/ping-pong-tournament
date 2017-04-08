@@ -17,7 +17,7 @@ import './style/style.scss';
 
 window.GLOBALS = {
   SIGNUP_DEADLINE: new Date('Mar 24, 2017, 23:59'),
-  POOL_PLAY_DEADLINE: new Date('Apr 7, 2017, 23:59'),
+  POOL_PLAY_DEADLINE: new Date('Apr 14, 2017, 23:59'),
   NOW: new Date(),
   DATA: {}, // this will be populated in getAllTables()
   DEBUG_MODE: false  // set to true to try out different states from the UI
@@ -77,10 +77,15 @@ function updateTabs () {
   });
 
   generalUtils.populateLeaderBoard();
-  signupTab.render();
-  poolPlayTab.render();
-  bracketTab.render();
-  statsTab.render();
+  if (currentHash === '#signupTab') {
+    signupTab.render();
+  } else if (currentHash === '#poolPlayTab') {
+    poolPlayTab.render();
+  } else if (currentHash === '#bracketTab') {
+    bracketTab.render();
+  } else if (currentHash === '#statsTab') {
+    statsTab.render();
+  }
   generalUtils.showSpinner(false);
 }
 
