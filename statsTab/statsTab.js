@@ -6,7 +6,7 @@ import generalUtils from '../generalUtils';
 import template from './template.html';
 import './style.scss';
 
-const CELL_SIZE = 80;
+const CELL_SIZE = 50;
 
 let graph = {
   nodes: [],
@@ -130,7 +130,7 @@ function computeLinkPath (d) {
 function drawPointyArc (d) {
   let dx = d.target.x - d.source.x;
   let dy = d.target.y - d.source.y;
-  let arcRadius = 80 * dx / Math.abs(dx);
+  let arcRadius = CELL_SIZE * dx / Math.abs(dx);
   let theta;
   let edgePoint;
   let front;
@@ -226,8 +226,10 @@ function render () {
       .velocityDecay(0.05)
       .force('link', d3.forceLink()
         .id(d => d.id)
-        .distance(d => CELL_SIZE + 60))
-      .force('center', d3.forceCenter(bounds.width / 2, bounds.height / 2))
+        .distance(d => CELL_SIZE + 60)
+        .strength(0.05))
+      .force('repulsion', d3.forceManyBody().strength(-3))
+      // .force('center', d3.forceCenter(bounds.width / 2, bounds.height / 2))
       .force('collision', d3.forceCollide().radius(CELL_SIZE / 2))
       .force('boundingBox', boundingBoxForce(bounds))
       .on('tick', () => {

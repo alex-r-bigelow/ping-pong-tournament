@@ -14342,7 +14342,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var CELL_SIZE = 80;
+var CELL_SIZE = 50;
 
 var graph = {
   nodes: [],
@@ -14461,7 +14461,7 @@ function computeLinkPath (d) {
 function drawPointyArc(d) {
   var dx = d.target.x - d.source.x;
   var dy = d.target.y - d.source.y;
-  var arcRadius = 80 * dx / Math.abs(dx);
+  var arcRadius = CELL_SIZE * dx / Math.abs(dx);
   var theta = void 0;
   var edgePoint = void 0;
   var front = void 0;
@@ -14546,7 +14546,9 @@ function render() {
       return d.id;
     }).distance(function (d) {
       return CELL_SIZE + 60;
-    })).force('center', d3.forceCenter(bounds.width / 2, bounds.height / 2)).force('collision', d3.forceCollide().radius(CELL_SIZE / 2)).force('boundingBox', boundingBoxForce(bounds)).on('tick', function () {
+    }).strength(0.05)).force('repulsion', d3.forceManyBody().strength(-3))
+    // .force('center', d3.forceCenter(bounds.width / 2, bounds.height / 2))
+    .force('collision', d3.forceCollide().radius(CELL_SIZE / 2)).force('boundingBox', boundingBoxForce(bounds)).on('tick', function () {
       nodes.attr('transform', function (d) {
         return 'translate(' + d.x + ',' + d.y + ')';
       });
@@ -14747,7 +14749,7 @@ exports = module.exports = __webpack_require__(2)();
 
 
 // module
-exports.push([module.i, "/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n#statsTab {\n  position: absolute;\n  left: 1em;\n  top: 1em;\n  right: 1em;\n  bottom: 1em;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none; }\n  #statsTab #nodeLayer g {\n    cursor: -webkit-grab;\n    cursor: grab; }\n    #statsTab #nodeLayer g.dragging {\n      cursor: -webkit-grabbing;\n      cursor: grabbing; }\n    #statsTab #nodeLayer g circle {\n      fill: #D95F02; }\n    #statsTab #nodeLayer g text tspan {\n      fill: #F7F7F7;\n      text-anchor: middle;\n      font-size: 0.75em; }\n  #statsTab #linkLayer path {\n    fill: rgba(247, 247, 247, 0.5); }\n", ""]);
+exports.push([module.i, "/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n#statsTab {\n  position: absolute;\n  left: 1em;\n  top: 1em;\n  right: 1em;\n  bottom: 1em;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none; }\n  #statsTab #nodeLayer g {\n    cursor: -webkit-grab;\n    cursor: grab; }\n    #statsTab #nodeLayer g.dragging {\n      cursor: -webkit-grabbing;\n      cursor: grabbing; }\n    #statsTab #nodeLayer g circle {\n      fill: #D95F02; }\n    #statsTab #nodeLayer g text tspan {\n      fill: #F7F7F7;\n      text-anchor: middle;\n      font-size: 0.5em; }\n  #statsTab #linkLayer path {\n    fill: rgba(247, 247, 247, 0.5); }\n", ""]);
 
 // exports
 
@@ -15039,7 +15041,7 @@ window.d3 = d3;
 
 window.GLOBALS = {
   SIGNUP_DEADLINE: new Date('Mar 24, 2017, 23:59'),
-  POOL_PLAY_DEADLINE: new Date('Apr 7, 2017, 23:59'),
+  POOL_PLAY_DEADLINE: new Date('Apr 14, 2017, 23:59'),
   NOW: new Date(),
   DATA: {}, // this will be populated in getAllTables()
   DEBUG_MODE: false // set to true to try out different states from the UI
@@ -15099,10 +15101,15 @@ function updateTabs() {
   });
 
   _generalUtils2.default.populateLeaderBoard();
-  _signupTab2.default.render();
-  _poolPlayTab2.default.render();
-  _bracketTab2.default.render();
-  _statsTab2.default.render();
+  if (currentHash === '#signupTab') {
+    _signupTab2.default.render();
+  } else if (currentHash === '#poolPlayTab') {
+    _poolPlayTab2.default.render();
+  } else if (currentHash === '#bracketTab') {
+    _bracketTab2.default.render();
+  } else if (currentHash === '#statsTab') {
+    _statsTab2.default.render();
+  }
   _generalUtils2.default.showSpinner(false);
 }
 
