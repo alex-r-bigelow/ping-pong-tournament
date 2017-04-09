@@ -123,8 +123,8 @@ function displayNotification (message) {
 }
 
 function handleSubmission (validationFunction, tableName, formElement) {
+  showSpinner(true);
   validationFunction().then(() => {
-    showSpinner(true);
     googleSheetsFakeDb.submitForm(tableName, formElement)
       .then(() => {
         // Wait a few seconds to refresh the page so Google has time

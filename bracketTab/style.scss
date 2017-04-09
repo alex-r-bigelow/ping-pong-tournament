@@ -1,5 +1,47 @@
 @import '../style/colors.scss';
 
 #bracketTab {
-  
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  overflow: auto;
+
+  #nodes {
+    g {
+      text tspan {
+        text-anchor: middle;
+        font-size: 0.75em;
+      }
+
+      &.noScores {
+        circle {
+          fill: $uiAccentColor;
+        }
+        text tspan {
+          fill: $White;
+        }
+      }
+
+      &:hover {
+        cursor: pointer;
+        circle {
+          fill: $White;
+        }
+        text tspan {
+          fill: $darkUiColor;
+        }
+      }
+
+      &.withScores {
+        circle {
+          fill: $White;
+        }
+        text tspan {
+          fill: $uiAccentColor;
+        }
+      }
+    }
+  }
 }

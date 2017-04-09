@@ -20,7 +20,7 @@ window.GLOBALS = {
   POOL_PLAY_DEADLINE: new Date('Apr 14, 2017, 23:59'),
   NOW: new Date(),
   DATA: {}, // this will be populated in getAllTables()
-  DEBUG_MODE: false  // set to true to try out different states from the UI
+  DEBUG_MODE: true  // set to true to try out different states from the UI
 };
 
 function setupDebugging () {
@@ -109,6 +109,7 @@ function getAllTables () {
       window.GLOBALS.NOW = new Date();
     }
     delete window.GLOBALS.MATCH_LOOKUP;
+    delete window.GLOBALS.BRACKET;
     // Update the tables every 30 seconds
     window.setTimeout(() => {
       getAllTables();
