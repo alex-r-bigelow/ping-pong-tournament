@@ -2,11 +2,11 @@ import * as d3 from 'd3';
 import jQuery from 'jquery';
 
 import generalUtils from '../generalUtils';
+import edgeTechniques from '../edgeTechniques';
 
 import template from './template.html';
 import './style.scss';
 
-const CELL_SIZE = 80;
 const CELL_PADDING = 20;
 
 function setup () {
@@ -18,7 +18,8 @@ function constructBracket () {
     lookup: {},
     nodes: [],
     seedLookup: {},
-    numPlayers: window.GLOBALS.DATA.Bracket.contents.length
+    numPlayers: window.GLOBALS.DATA.Bracket.contents.length,
+    links: []
   };
   bracket.treeDepth = Math.ceil(Math.log2(bracket.numPlayers));
 
@@ -37,24 +38,24 @@ function constructBracket () {
         underdog: null,
         round: bracket.treeDepth,
         winner: seed.Player,
-        hidden: false
+        cantPlayYet: false
       };
       lastLayer.push(newNode);
       bracket.nodes.push(newNode);
       bracket.seedLookup[seed.Player] = parseInt(seed.Seed);
     });
-  // Add additional autowin nodes until the layer is full
+  // Add additional BYE nodes until the layer is full
   while (bracket.nodes.length < Math.pow(2, bracket.treeDepth)) {
-    let id = 'autowin' + bracket.nodes.length;
+    let id = 'BYE' + bracket.nodes.length;
     bracket.lookup[id] = bracket.nodes.length;
     let newNode = {
       id,
-      type: 'AUTOWIN',
+      type: 'BYE',
       favorite: null,
       underdog: null,
       round: bracket.treeDepth,
-      winner: null,
-      hidden: true
+      winner: id,
+      cantPlayYet: false
     };
     lastLayer.push(newNode);
     bracket.nodes.push(newNode);
@@ -82,10 +83,10 @@ function constructBracket () {
         underdog: underdogNode.id,
         round,
         winner: null,
-        hidden: favoriteNode.winner === null || underdogNode.winner === null
+        cantPlayYet: favoriteNode.winner === null || underdogNode.winner === null
       };
 
-      if (underdogNode.type === 'AUTOWIN') {
+      if (underdogNode.type === 'BYE') {
         newNode.winner = favoriteNode.winner;
       } else if (favoriteNode.winner !== null && underdogNode.winner !== null) {
         let match = generalUtils.getAllMatches(favoriteNode.winner, underdogNode.winner)
@@ -94,6 +95,15 @@ function constructBracket () {
           newNode.winner = generalUtils.computeWinner(match);
         }
       }
+
+      bracket.links.push({
+        source: favoriteNode,
+        target: newNode
+      });
+      bracket.links.push({
+        source: underdogNode,
+        target: newNode
+      });
 
       newLayer.push(newNode);
       bracket.nodes.push(newNode);
@@ -113,8 +123,8 @@ function constructBracket () {
 
     if (node.round === 0) {
       // The root node goes in the center
-      node.x = 0;
-      node.y = 0;
+      node.normX = 0;
+      node.normY = 0;
       node.ySpan = 2.0;
     } else {
       // Figure out x position based on round number and whether
@@ -129,29 +139,29 @@ function constructBracket () {
         // The final two go to the left and right, based on favorite and
         // underdog, respectively
         if (parent.favorite === node.id) {
-          node.x = -xOffset;
-          node.y = 0;
+          node.normX = -xOffset;
+          node.normY = 0;
           node.ySpan = 2.0;
         } else {
-          node.x = xOffset;
-          node.y = 0;
+          node.normX = xOffset;
+          node.normY = 0;
           node.ySpan = 2.0;
         }
       } else {
         // A deeper node can simply check if its parent is to the left
         // or right of the middle to determine which side it's on
-        if (parent.x < 0) {
-          node.x = -xOffset;
+        if (parent.normX < 0) {
+          node.normX = -xOffset;
         } else {
-          node.x = xOffset;
+          node.normX = xOffset;
         }
 
         // It can also simply divide the vertical space
         if (parent.favorite === node.id) {
-          node.y = parent.y - parent.ySpan / 4;
+          node.normY = parent.normY - parent.ySpan / 4;
           node.ySpan = parent.ySpan / 2;
         } else {
-          node.y = parent.y + parent.ySpan / 4;
+          node.normY = parent.normY + parent.ySpan / 4;
           node.ySpan = parent.ySpan / 2;
         }
       }
@@ -169,8 +179,8 @@ function renderBracket () {
   let bracketTabElement = bracketTab.node();
   let containerBounds = bracketTabElement.getBoundingClientRect();
   let bounds = {
-    width: Math.max(containerBounds.width, (CELL_SIZE + CELL_PADDING) * (bracket.treeDepth * 2 - 1)),
-    height: Math.max(containerBounds.height, (CELL_SIZE + CELL_PADDING) * Math.pow(2, bracket.treeDepth - 1))
+    width: Math.max(containerBounds.width, (window.NODE_SIZE + CELL_PADDING) * (bracket.treeDepth * 2 - 1)),
+    height: Math.max(containerBounds.height, (window.NODE_SIZE + CELL_PADDING) * Math.pow(2, bracket.treeDepth - 1))
   };
   let svg = bracketTab.select('svg')
     .attrs(bounds);
@@ -178,21 +188,22 @@ function renderBracket () {
   let xPosition = d3.scaleLinear()
     .domain([-1, 1])
     .range([
-      (CELL_SIZE + CELL_PADDING) / 2,
-      bounds.width - (CELL_SIZE + CELL_PADDING) / 2
+      (window.NODE_SIZE + CELL_PADDING) / 2,
+      bounds.width - (window.NODE_SIZE + CELL_PADDING) / 2
     ]);
   let yPosition = d3.scaleLinear()
     .domain([-1, 1])
     .range([
-      (CELL_SIZE + CELL_PADDING) / 2,
-      bounds.height - (CELL_SIZE + CELL_PADDING) / 2
+      (window.NODE_SIZE + CELL_PADDING) / 2,
+      bounds.height - (window.NODE_SIZE + CELL_PADDING) / 2
     ]);
 
+  // Render the nodes
   let nodes = svg.select('#nodes').selectAll('g')
     .data(bracket.nodes);
   nodes.exit().remove();
   let nodesEnter = nodes.enter()
-    .append('g').classed('matchCell', true);
+    .append('g');
   nodesEnter.append('circle');
   let nodesEnterText = nodesEnter.append('text');
   nodesEnterText.append('tspan')
@@ -204,25 +215,70 @@ function renderBracket () {
     .attr('x', '0em');
   nodes = nodesEnter.merge(nodes);
 
+  nodes.each(d => {
+    d.x = xPosition(d.normX);
+    d.y = yPosition(d.normY);
+  });
   nodes.attr('transform', d => {
-    return 'translate(' + xPosition(d.x) + ',' + yPosition(d.y) + ')';
-  }).classed('noScores', d => d.winner === null)
-    .classed('withScores', d => d.winner !== null)
-    .classed('hidden', d => d.hidden);
-  nodes.select('circle')
-    .attr('r', CELL_SIZE / 2);
-  nodes.select('.firstName')
-    .text(d => d.winner ? generalUtils.splitName(d.winner).firstName : 'Enter');
-  nodes.select('.lastName')
-    .text(d => d.winner ? generalUtils.splitName(d.winner).lastName : 'Scores');
-  nodes.on('click', d => {
-    if (d.winner === null) {
-      generalUtils.enterScore(d.player1, d.player2, 'Pool Play');
+    return 'translate(' + d.x + ',' + d.y + ')';
+  }).attr('class', d => {
+    if (d.cantPlayYet) {
+      return 'cantPlayYet';
+    } else if (d.type === 'BYE') {
+      return 'bye';
+    } else if (d.winner === null) {
+      return 'noScores';
+    } else {
+      return 'withScores';
     }
   });
+  nodes.select('circle')
+    .attr('r', window.NODE_SIZE / 2);
+  nodes.select('.firstName')
+    .text(d => {
+      if (d.type === 'BYE') {
+        return 'BYE /';
+      } else if (d.winner) {
+        return generalUtils.splitName(d.winner).firstName;
+      } else if (d.cantPlayYet) {
+        return 'Players';
+      } else {
+        return 'Enter';
+      }
+    });
+  nodes.select('.lastName')
+    .text(d => {
+      if (d.type === 'BYE') {
+        return 'PASS';
+      } else if (d.winner) {
+        return generalUtils.splitName(d.winner).lastName;
+      } else if (d.cantPlayYet) {
+        return 'TBD';
+      } else {
+        return 'Scores';
+      }
+    });
+  nodes.on('click', d => {
+    if (!d.cantPlayYet && d.winner === null) {
+      let favoriteNode = bracket.nodes[bracket.lookup[d.favorite]];
+      let underdogNode = bracket.nodes[bracket.lookup[d.underdog]];
+      generalUtils.enterScore(favoriteNode.winner, underdogNode.winner, d.round);
+    }
+  });
+
+  // Render the links
+  let links = svg.select('#links').selectAll('path')
+    .data(bracket.links);
+  links.exit().remove();
+  let linksEnter = links.enter().append('path')
+    .classed('link', true);
+  links = linksEnter.merge(links);
+
+  links.attr('d', edgeTechniques.drawPointyArc);
 }
 
 function render () {
+  window.NODE_SIZE = 80;
   if (window.GLOBALS.NOW < window.GLOBALS.POOL_PLAY_DEADLINE) {
     jQuery('#bracketTab svg').hide();
     jQuery('#bracketTab .waitMessage').show();

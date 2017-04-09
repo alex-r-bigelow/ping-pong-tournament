@@ -24,7 +24,7 @@
         }
       }
 
-      &:hover {
+      &.noScores:hover {
         cursor: pointer;
         circle {
           fill: $White;
@@ -40,6 +40,27 @@
         }
         text tspan {
           fill: $uiAccentColor;
+        }
+      }
+
+      &.cantPlayYet {
+        circle {
+          fill: $Black;
+          stroke: $uiAccentColor;
+        }
+        text tspan {
+          fill: $uiAccentColor;
+        }
+      }
+
+      &.bye {
+        circle {
+          fill: $Black;
+          stroke: $LightGrey;
+          stroke-dasharray: 5, 5;
+        }
+        text tspan {
+          fill: $White;
         }
       }
     }
