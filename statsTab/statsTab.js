@@ -86,7 +86,7 @@ function finishDraggingNode (d) {
 
 function renderNodes (svg, graph) {
   let nodes = svg.select('#nodeLayer').selectAll('g')
-    .data(graph.nodes);
+    .data(graph.nodes, d => d.id);
   nodes.exit().remove();
   let nodesEnter = nodes.enter().append('g')
     .call(d3.drag()

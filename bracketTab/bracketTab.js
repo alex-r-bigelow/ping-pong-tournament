@@ -7,7 +7,7 @@ import edgeTechniques from '../edgeTechniques';
 import template from './template.html';
 import './style.scss';
 
-const CELL_PADDING = 20;
+const CELL_PADDING = 10;
 
 function setup () {
   jQuery('#bracketTab').html(template);
@@ -177,13 +177,14 @@ function renderBracket () {
 
   let bracketTab = d3.select('#bracketTab');
   let bracketTabElement = bracketTab.node();
+  let svg = bracketTab.select('svg')
+    .attrs({ width: null, height: null });
   let containerBounds = bracketTabElement.getBoundingClientRect();
   let bounds = {
-    width: Math.max(containerBounds.width, (window.NODE_SIZE + CELL_PADDING) * (bracket.treeDepth * 2 - 1)),
+    width: Math.max(containerBounds.width, (window.NODE_SIZE + CELL_PADDING) * (bracket.treeDepth * 2)),
     height: Math.max(containerBounds.height, (window.NODE_SIZE + CELL_PADDING) * Math.pow(2, bracket.treeDepth - 1))
   };
-  let svg = bracketTab.select('svg')
-    .attrs(bounds);
+  svg.attrs(bounds);
 
   let xPosition = d3.scaleLinear()
     .domain([-1, 1])
@@ -193,10 +194,7 @@ function renderBracket () {
     ]);
   let yPosition = d3.scaleLinear()
     .domain([-1, 1])
-    .range([
-      (window.NODE_SIZE + CELL_PADDING) / 2,
-      bounds.height - (window.NODE_SIZE + CELL_PADDING) / 2
-    ]);
+    .range([0, bounds.height]);
 
   // Render the nodes
   let nodes = svg.select('#nodes').selectAll('g')
@@ -212,6 +210,10 @@ function renderBracket () {
   nodesEnterText.append('tspan')
     .classed('lastName', true)
     .attr('y', '0.75em')
+    .attr('x', '0em');
+  nodesEnterText.append('tspan')
+    .classed('seed', true)
+    .attr('y', '2em')
     .attr('x', '0em');
   nodes = nodesEnter.merge(nodes);
 
@@ -258,6 +260,14 @@ function renderBracket () {
         return 'Scores';
       }
     });
+  nodes.select('.seed')
+    .text(d => {
+      if (d.type !== 'BYE' && d.winner) {
+        return bracket.seedLookup[d.winner];
+      } else {
+        return '';
+      }
+    });
   nodes.on('click', d => {
     if (!d.cantPlayYet && d.winner === null) {
       let favoriteNode = bracket.nodes[bracket.lookup[d.favorite]];
@@ -278,7 +288,7 @@ function renderBracket () {
 }
 
 function render () {
-  window.NODE_SIZE = 80;
+  window.NODE_SIZE = 65;
   if (window.GLOBALS.NOW < window.GLOBALS.POOL_PLAY_DEADLINE) {
     jQuery('#bracketTab svg').hide();
     jQuery('#bracketTab .waitMessage').show();
