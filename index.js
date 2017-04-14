@@ -109,6 +109,7 @@ function getAllTables () {
       window.GLOBALS.NOW = new Date();
     }
     delete window.GLOBALS.MATCH_LOOKUP;
+    delete window.GLOBALS.BRACKET;
     // Update the tables every 30 seconds
     window.setTimeout(() => {
       getAllTables();

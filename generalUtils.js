@@ -74,6 +74,10 @@ function populateLeaderBoard () {
   });
 
   // Get the seeds for each player
+  let seeds = {};
+  window.GLOBALS.DATA.Bracket.contents.forEach(seed => {
+    seeds[seed.Player] = parseInt(seed.Seed);
+  });
 
   // Assemble the summary stats for each player
   let leaderBoardData = window.GLOBALS.DATA.Players.contents.map(player => {
@@ -81,7 +85,7 @@ function populateLeaderBoard () {
       player['Player Name'],
       player['Charity'],
       totalBets[player['Player Name']] || 0,
-      '',
+      seeds[player['Player Name']] || '',
       totalWins[player['Player Name']] || 0,
       totalLosses[player['Player Name']] || 0
     ];
@@ -123,8 +127,8 @@ function displayNotification (message) {
 }
 
 function handleSubmission (validationFunction, tableName, formElement) {
+  showSpinner(true);
   validationFunction().then(() => {
-    showSpinner(true);
     googleSheetsFakeDb.submitForm(tableName, formElement)
       .then(() => {
         // Wait a few seconds to refresh the page so Google has time

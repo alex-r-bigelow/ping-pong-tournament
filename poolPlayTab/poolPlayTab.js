@@ -6,8 +6,6 @@ import generalUtils from '../generalUtils';
 import template from './template.html';
 import './style.scss';
 
-const CELL_SIZE = 80;
-
 function setup () {
   d3.select('#poolPlayTab').html(template);
 }
@@ -58,12 +56,12 @@ function renderPools () {
 
   xLabels.text(d => d)
     .attr('text-anchor', 'end')
-    .attr('x', -3 * CELL_SIZE / 4)
+    .attr('x', -3 * window.NODE_SIZE / 4)
     .attr('transform', 'rotate(90)')
     .each(function (d, i) {
       let players = d3.select(this.parentElement).datum();
       d3.select(this)
-        .attr('y', (i - (players.length - 2)) * CELL_SIZE);
+        .attr('y', (i - (players.length - 2)) * window.NODE_SIZE);
     });
 
   let yLabels = poolGroups.selectAll('.yLabel').data(players => players.slice(0, players.length - 1));
@@ -75,8 +73,8 @@ function renderPools () {
   yLabels.text(d => d)
     .attr('x', function () {
       let players = d3.select(this.parentElement).datum();
-      return (players.length - 1.25) * CELL_SIZE;
-    }).attr('y', (d, i) => i * CELL_SIZE);
+      return (players.length - 1.25) * window.NODE_SIZE;
+    }).attr('y', (d, i) => i * window.NODE_SIZE);
 
   // Draw a cell for each pairing in the pool
   let matchCells = poolGroups.selectAll('.matchCell').data(players => {
@@ -112,12 +110,12 @@ function renderPools () {
 
   matchCells.attr('transform', d => {
     return 'translate(' +
-      (CELL_SIZE * d.x) + ',' + (CELL_SIZE * d.y) +
+      (window.NODE_SIZE * d.x) + ',' + (window.NODE_SIZE * d.y) +
       ') rotate(45)';
   }).classed('noScores', d => d.winner === null)
     .classed('withScores', d => d.winner !== null);
   matchCells.select('circle')
-    .attr('r', CELL_SIZE / 2);
+    .attr('r', window.NODE_SIZE / 2);
   matchCells.select('.firstName')
     .text(d => d.winner ? generalUtils.splitName(d.winner).firstName : 'Enter');
   matchCells.select('.lastName')
@@ -153,6 +151,7 @@ function renderPools () {
 }
 
 function render () {
+  window.NODE_SIZE = 80;
   if (window.GLOBALS.NOW >= window.GLOBALS.SIGNUP_DEADLINE) {
     jQuery('#poolPlayTab svg').show();
     jQuery('#poolPlayTab .waitMessage').hide();

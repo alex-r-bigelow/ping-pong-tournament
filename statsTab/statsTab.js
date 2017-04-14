@@ -2,11 +2,10 @@ import * as d3 from 'd3';
 import jQuery from 'jquery';
 
 import generalUtils from '../generalUtils';
+import edgeTechniques from '../edgeTechniques';
 
 import template from './template.html';
 import './style.scss';
-
-const CELL_SIZE = 50;
 
 let graph = {
   nodes: [],
@@ -58,8 +57,8 @@ function updateGraph (date) {
       let player2 = match['Player 2'];
       let winner = generalUtils.computeWinner(match);
       graph.links.push({
-        target: winner === player1 ? player2 : player1,
-        source: winner
+        source: winner === player1 ? player2 : player1,
+        target: winner
       });
     }
   });
@@ -87,7 +86,7 @@ function finishDraggingNode (d) {
 
 function renderNodes (svg, graph) {
   let nodes = svg.select('#nodeLayer').selectAll('g')
-    .data(graph.nodes);
+    .data(graph.nodes, d => d.id);
   nodes.exit().remove();
   let nodesEnter = nodes.enter().append('g')
     .call(d3.drag()
@@ -105,7 +104,7 @@ function renderNodes (svg, graph) {
   nodes.select('.lastName').text(d => d.lastName)
     .attr('y', '0.75em')
     .attr('x', '0em');
-  nodes.select('circle').attr('r', CELL_SIZE / 2);
+  nodes.select('circle').attr('r', window.NODE_SIZE / 2);
 
   return nodes;
 }
@@ -114,69 +113,11 @@ function renderLinks (svg, graph) {
   let links = svg.select('#linkLayer').selectAll('path')
     .data(graph.links);
   links.exit().remove();
-  let linksEnter = links.enter().append('path');
+  let linksEnter = links.enter().append('path')
+    .classed('link', true);
   links = linksEnter.merge(links);
 
   return links;
-}
-
-/*
-function computeLinkPath (d) {
-  return 'M' + d.source.x + ',' + d.source.y +
-         'L' + d.target.x + ',' + d.target.y;
-}
-*/
-
-function drawPointyArc (d) {
-  let dx = d.target.x - d.source.x;
-  let dy = d.target.y - d.source.y;
-  let arcRadius = CELL_SIZE * dx / Math.abs(dx);
-  let theta;
-  let edgePoint;
-  let front;
-  let back;
-  let arc;
-
-  if (dx === 0) {
-    if (dy >= 0) {
-      theta = Math.PI;
-    } else {
-      theta = -Math.PI;
-    }
-    edgePoint = {
-      x: 0,
-      y: CELL_SIZE / 2
-    };
-  } else {
-    theta = Math.atan((d.target.y - d.source.y) / (d.target.x - d.source.x)) + Math.PI / 2;
-    edgePoint = {
-      x: CELL_SIZE / 2 * Math.cos(theta),
-      y: CELL_SIZE / 2 * Math.sin(theta)
-    };
-  }
-  front = {
-    x: d.source.x + edgePoint.x,
-    y: d.source.y + edgePoint.y
-  };
-  back = {
-    x: d.source.x - edgePoint.x,
-    y: d.source.y - edgePoint.y
-  };
-  arc = {
-    x: (d.source.x + d.target.x) / 2 + arcRadius * Math.cos(theta),
-    y: (d.source.y + d.target.y) / 2 + arcRadius * Math.sin(theta)
-  };
-  return 'M' +
-    front.x + ',' +
-    front.y + 'Q' +
-    arc.x + ',' +
-    arc.y + ',' +
-    d.target.x + ',' +
-    d.target.y + 'Q' +
-    arc.x + ',' +
-    arc.y + ',' +
-    back.x + ',' +
-    back.y + 'Z';
 }
 
 function boundingBoxForce (bounds) {
@@ -184,20 +125,20 @@ function boundingBoxForce (bounds) {
 
   function force () {
     nodes.forEach(node => {
-      if (node.x - CELL_SIZE / 2 <= 0) {
-        node.x = CELL_SIZE / 2;
+      if (node.x - window.NODE_SIZE / 2 <= 0) {
+        node.x = window.NODE_SIZE / 2;
         node.vx = Math.abs(node.vx);
       }
-      if (node.y - CELL_SIZE / 2 <= 0) {
-        node.y = CELL_SIZE / 2;
+      if (node.y - window.NODE_SIZE / 2 <= 0) {
+        node.y = window.NODE_SIZE / 2;
         node.vy = Math.abs(node.vy);
       }
-      if (node.x + CELL_SIZE / 2 >= bounds.width) {
-        node.x = bounds.width - CELL_SIZE / 2;
+      if (node.x + window.NODE_SIZE / 2 >= bounds.width) {
+        node.x = bounds.width - window.NODE_SIZE / 2;
         node.vx = -Math.abs(node.vx);
       }
-      if (node.y + CELL_SIZE / 2 >= bounds.height) {
-        node.y = bounds.height - CELL_SIZE / 2;
+      if (node.y + window.NODE_SIZE / 2 >= bounds.height) {
+        node.y = bounds.height - window.NODE_SIZE / 2;
         node.vy = -Math.abs(node.vy);
       }
     });
@@ -209,6 +150,8 @@ function boundingBoxForce (bounds) {
 }
 
 function render () {
+  window.NODE_SIZE = 50;
+
   let statsTab = d3.select('#statsTab');
   let bounds = statsTab.node().getBoundingClientRect();
   let svg = statsTab.select('svg');
@@ -226,16 +169,19 @@ function render () {
       .velocityDecay(0.05)
       .force('link', d3.forceLink()
         .id(d => d.id)
-        .distance(d => CELL_SIZE + 60)
+        .distance(d => window.NODE_SIZE + 60)
         .strength(0.05))
-      .force('repulsion', d3.forceManyBody().strength(-3))
+      .force('repulsion', d3.forceManyBody().strength(-7))
       // .force('center', d3.forceCenter(bounds.width / 2, bounds.height / 2))
-      .force('collision', d3.forceCollide().radius(CELL_SIZE / 2))
+      .force('collision', d3.forceCollide().radius(window.NODE_SIZE / 2))
       .force('boundingBox', boundingBoxForce(bounds))
       .on('tick', () => {
         nodes.attr('transform', d => 'translate(' + d.x + ',' + d.y + ')');
-        links.attr('d', drawPointyArc);
+        links.attr('d', edgeTechniques.drawPointyArc);
       });
+  } else {
+    // Perturb it just a little
+    simulation.alpha(0.3).restart();
   }
 
   simulation.nodes(graph.nodes);
