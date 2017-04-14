@@ -16270,7 +16270,7 @@ window.GLOBALS = {
   POOL_PLAY_DEADLINE: new Date('Apr 14, 2017, 23:59'),
   NOW: new Date(),
   DATA: {}, // this will be populated in getAllTables()
-  DEBUG_MODE: true // set to true to try out different states from the UI
+  DEBUG_MODE: false // set to true to try out different states from the UI
 };
 
 function setupDebugging() {
