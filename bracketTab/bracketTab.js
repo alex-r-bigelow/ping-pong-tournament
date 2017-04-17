@@ -181,7 +181,7 @@ function renderBracket () {
     .attrs({ width: null, height: null });
   let containerBounds = bracketTabElement.getBoundingClientRect();
   let bounds = {
-    width: Math.max(containerBounds.width, (window.NODE_SIZE + CELL_PADDING) * (bracket.treeDepth * 2)),
+    width: Math.max(containerBounds.width - 20, (window.NODE_SIZE + CELL_PADDING) * (bracket.treeDepth * 2)),
     height: Math.max(containerBounds.height, (window.NODE_SIZE + CELL_PADDING) * Math.pow(2, bracket.treeDepth - 1))
   };
   svg.attrs(bounds);

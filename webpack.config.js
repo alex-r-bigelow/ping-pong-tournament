@@ -1,7 +1,7 @@
 'use strict';
 
 var path = require('path');
-var CleanWebpackPlugin = require('clean-webpack-plugin');
+// var CleanWebpackPlugin = require('clean-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -17,9 +17,9 @@ module.exports = {
   },
   devtool: 'cheap-source-map',
   plugins: [
-    new CleanWebpackPlugin([
+    /* new CleanWebpackPlugin([
       './docs'
-    ]),
+    ]), */
     new HtmlWebpackPlugin({
       template: 'index.html', // Load a custom template
       inject: 'body' // Inject all scripts into the body
