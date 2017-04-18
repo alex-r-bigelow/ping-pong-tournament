@@ -15304,7 +15304,7 @@ function getCloseBounds(element) {
   return bounds;
 }
 
-function renderPools() {
+function renderPools(disableDataEntry) {
   var pools = {};
   window.GLOBALS.DATA.Pools.contents.forEach(function (poolAssignment) {
     if (!pools[poolAssignment.Pool]) {
@@ -15389,16 +15389,30 @@ function renderPools() {
     return d.winner === null;
   }).classed('withScores', function (d) {
     return d.winner !== null;
+  }).classed('cantEnterScores', function (d) {
+    return d.winner === null && disableDataEntry;
   });
   matchCells.select('circle').attr('r', window.NODE_SIZE / 2);
   matchCells.select('.firstName').text(function (d) {
-    return d.winner ? _generalUtils2.default.splitName(d.winner).firstName : 'Enter';
+    if (d.winner) {
+      return _generalUtils2.default.splitName(d.winner).firstName;
+    } else if (disableDataEntry) {
+      return 'Deadline';
+    } else {
+      return 'Enter';
+    }
   });
   matchCells.select('.lastName').text(function (d) {
-    return d.winner ? _generalUtils2.default.splitName(d.winner).lastName : 'Scores';
+    if (d.winner) {
+      return _generalUtils2.default.splitName(d.winner).lastName;
+    } else if (disableDataEntry) {
+      return 'Passed';
+    } else {
+      return 'Scores';
+    }
   });
   matchCells.on('click', function (d) {
-    if (d.winner === null) {
+    if (d.winner === null && !disableDataEntry) {
       _generalUtils2.default.enterScore(d.player1, d.player2, 'Pool Play');
     }
   });
@@ -15431,7 +15445,7 @@ function render() {
   if (window.GLOBALS.NOW >= window.GLOBALS.SIGNUP_DEADLINE) {
     (0, _jquery2.default)('#poolPlayTab svg').show();
     (0, _jquery2.default)('#poolPlayTab .waitMessage').hide();
-    renderPools();
+    renderPools(window.GLOBALS.NOW >= window.GLOBALS.POOL_PLAY_DEADLINE);
   } else {
     (0, _jquery2.default)('#poolPlayTab svg').hide();
     (0, _jquery2.default)('#poolPlayTab .waitMessage').show();
@@ -15947,7 +15961,7 @@ exports = module.exports = __webpack_require__(2)();
 
 
 // module
-exports.push([module.i, "/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n#poolPlayTab {\n  position: absolute;\n  top: 0px;\n  bottom: 0px;\n  left: 0px;\n  right: 0px;\n  overflow: auto; }\n  #poolPlayTab .yLabel,\n  #poolPlayTab .xLabel {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell text tspan {\n    text-anchor: middle;\n    font-size: 0.75em; }\n  #poolPlayTab .matchCell.noScores circle {\n    fill: #D95F02; }\n  #poolPlayTab .matchCell.noScores text tspan {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell:hover {\n    cursor: pointer; }\n    #poolPlayTab .matchCell:hover circle {\n      fill: #F7F7F7; }\n    #poolPlayTab .matchCell:hover text tspan {\n      fill: #525252; }\n  #poolPlayTab .matchCell.withScores circle {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell.withScores text tspan {\n    fill: #D95F02; }\n", ""]);
+exports.push([module.i, "/*\nCurrent color scheme\n\nUsing ColorBrewer schemes:\nhttp://colorbrewer2.org/#type=qualitative&scheme=Dark2&n=8\nhttp://colorbrewer2.org/#type=qualitative&scheme=Pastel2&n=8\n*/\n/*\nColor meanings:\n*/\n/*\nFunction to get the ID of an SVG color-changing filter\n*/\n#poolPlayTab {\n  position: absolute;\n  top: 0px;\n  bottom: 0px;\n  left: 0px;\n  right: 0px;\n  overflow: auto; }\n  #poolPlayTab .yLabel,\n  #poolPlayTab .xLabel {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell text tspan {\n    text-anchor: middle;\n    font-size: 0.75em; }\n  #poolPlayTab .matchCell.noScores circle {\n    fill: #D95F02; }\n  #poolPlayTab .matchCell.noScores text tspan {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell.noScores:hover {\n    cursor: pointer; }\n    #poolPlayTab .matchCell.noScores:hover circle {\n      fill: #F7F7F7; }\n    #poolPlayTab .matchCell.noScores:hover text tspan {\n      fill: #525252; }\n  #poolPlayTab .matchCell.withScores circle {\n    fill: #F7F7F7; }\n  #poolPlayTab .matchCell.withScores text tspan {\n    fill: #D95F02; }\n  #poolPlayTab .matchCell.cantEnterScores, #poolPlayTab .matchCell.cantEnterScores:hover {\n    cursor: default; }\n    #poolPlayTab .matchCell.cantEnterScores circle, #poolPlayTab .matchCell.cantEnterScores:hover circle {\n      fill: #252525;\n      stroke: #BDBDBD;\n      stroke-dasharray: 5, 5; }\n    #poolPlayTab .matchCell.cantEnterScores text tspan, #poolPlayTab .matchCell.cantEnterScores:hover text tspan {\n      fill: #F7F7F7; }\n", ""]);
 
 // exports
 

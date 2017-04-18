@@ -24,7 +24,7 @@ function getCloseBounds (element) {
   return bounds;
 }
 
-function renderPools () {
+function renderPools (disableDataEntry) {
   let pools = {};
   window.GLOBALS.DATA.Pools.contents.forEach(poolAssignment => {
     if (!pools[poolAssignment.Pool]) {
@@ -113,15 +113,32 @@ function renderPools () {
       (window.NODE_SIZE * d.x) + ',' + (window.NODE_SIZE * d.y) +
       ') rotate(45)';
   }).classed('noScores', d => d.winner === null)
-    .classed('withScores', d => d.winner !== null);
+    .classed('withScores', d => d.winner !== null)
+    .classed('cantEnterScores', d => d.winner === null && disableDataEntry);
   matchCells.select('circle')
     .attr('r', window.NODE_SIZE / 2);
   matchCells.select('.firstName')
-    .text(d => d.winner ? generalUtils.splitName(d.winner).firstName : 'Enter');
+    .text(d => {
+      if (d.winner) {
+        return generalUtils.splitName(d.winner).firstName;
+      } else if (disableDataEntry) {
+        return 'Deadline';
+      } else {
+        return 'Enter';
+      }
+    });
   matchCells.select('.lastName')
-    .text(d => d.winner ? generalUtils.splitName(d.winner).lastName : 'Scores');
+    .text(d => {
+      if (d.winner) {
+        return generalUtils.splitName(d.winner).lastName;
+      } else if (disableDataEntry) {
+        return 'Passed';
+      } else {
+        return 'Scores';
+      }
+    });
   matchCells.on('click', d => {
-    if (d.winner === null) {
+    if (d.winner === null && !disableDataEntry) {
       generalUtils.enterScore(d.player1, d.player2, 'Pool Play');
     }
   });
@@ -155,7 +172,7 @@ function render () {
   if (window.GLOBALS.NOW >= window.GLOBALS.SIGNUP_DEADLINE) {
     jQuery('#poolPlayTab svg').show();
     jQuery('#poolPlayTab .waitMessage').hide();
-    renderPools();
+    renderPools(window.GLOBALS.NOW >= window.GLOBALS.POOL_PLAY_DEADLINE);
   } else {
     jQuery('#poolPlayTab svg').hide();
     jQuery('#poolPlayTab .waitMessage').show();

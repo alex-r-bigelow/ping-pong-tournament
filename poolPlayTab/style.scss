@@ -28,7 +28,7 @@
       }
     }
 
-    &:hover {
+    &.noScores:hover {
       cursor: pointer;
       circle {
         fill: $White;
@@ -44,6 +44,19 @@
       }
       text tspan {
         fill: $uiAccentColor;
+      }
+    }
+
+    &.cantEnterScores,
+    &.cantEnterScores:hover {
+      cursor: default;
+      circle {
+        fill: $Black;
+        stroke: $LightGrey;
+        stroke-dasharray: 5, 5;
+      }
+      text tspan {
+        fill: $White;
       }
     }
   }
