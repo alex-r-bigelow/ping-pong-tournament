@@ -2,9 +2,14 @@ An interface for scheduling and visualizing a charity ping pong tournament, opti
 
 View the interface [here](https://alex-r-bigelow.github.io/ping-pong-tournament/).
 
+Prerequisites:
+==============
+
+git, Node.js (npm) and webpack
+
 Setup:
 ======
-1. Fork this repository.
+1. Fork this repository, and clone it locally
 
 2. Create an [API key](https://console.developers.google.com/apis/credentials) (make sure to limit its usage to `https://your-username.github.io/*` and `http://localhost:*`), and paste it at the top of `googleSheetsFakeDb.js`.
 
@@ -39,17 +44,17 @@ Setup:
 
 6. Finally, in this directory:
     npm install
+    webpack
+
+7. The last step will have bundled everything into a `docs/` directory that you should then commit to your fork. In the GitHub settings for your fork, make sure to enable the docs folder as the source for GitHub Pages, if it isn't already.
+
+It will be up to you to manage the tournament; it's up to you to manually populate the `Pools` tab of the spreadsheet; once you have, the website will automatically shut down registration. Similarly, once you've populated the `Bracket` tab, the pools part of the interface will be locked.
 
 *Note:* It's up to you to populate the `Pools` and `Bracket` spreadsheets when the deadlines expire; this was a deliberate design decision to allow a little adaptation as necessary. Make a number for each pool, and a row for each player that has signed up. For the bracket, assign a numeric seed to each player.
 
 Development:
 ============
+If you want to make changes and see what they're like before deploying (e.g. if you enable `DEBUG_MODE`), use this command, and see the interface at localhost:8080
     webpack-dev-server --progress --colors --watch
 
-Deployment:
-===========
-    webpack
-
-This will bundle everything into a `docs/` directory that you should then commit. In the GitHub settings for your fork, make sure to enable the docs folder as the source for GitHub Pages, if it isn't already.
-
-It will be up to you to manage the tournament; it's up to you to manually populate the `Pools` tab of the spreadsheet; once you have, the website will automatically shut down registration. Similarly, once you've populated the `Bracket` tab, the pools part of the interface will be locked.
+And, of course, once you're satisfied with your changes, run `webpack` again, and commit the results.
