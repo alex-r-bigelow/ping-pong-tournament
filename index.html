@@ -25,6 +25,11 @@
           </tbody>
         </table>
       </div>
+      <div id="guessMode">
+        <label for="guesserName">Your name:</label>
+        <input type="text" id="guesserName" name="Guesser"/>
+        <a id="toggleGuessMode" class="disabled button">Enter your predictions</a>
+      </div>
       <div id="contact" class="messageBlurb">
         If you made a mistake, or something needs to be corrected, send an email to <a>abigelow@cs.utah.edu</a>
       </div>
@@ -54,7 +59,7 @@
       <a id="testSignupExpiration" class="button">Test Sign Up Expiration</a>
       <a id="testPoolPlayExpiration" class="button">Test Pool Play Expiration</a>
     </div>
-    <div id="scoreEntryModal" class="messageBlurb" style="display:none">
+    <div id="scoreEntryModal" class="messageBlurb modal" style="display:none">
       <h1>Round: <span id="roundField" name="Round"></span></h1>
       <form>
         <table>
@@ -84,9 +89,25 @@
           </tbody>
         </table>
       </form>
-      <span id="closeButtons">
+      <span class="closeButtons">
         <a id="cancelButton" class="button">Cancel</a>
         <a id="submitScoresButton" class="button">Submit Scores</a>
+      </span>
+    </div>
+    <div id="guessEntryModal" class="messageBlurb modal" style="display:none">
+      <h1>Round: <span id="roundGuessField" name="Round"></span></h1>
+      <form>
+        <p>Choose the player that you think will win:</p>
+        <input type="radio" id="guessPlayer1" name="Winner"/>
+        <label id="guessPlayer1label" for="guessPlayer1">Player 1</label><br/>
+        <input type="radio" id="guessPlayer2" name="Winner"/>
+        <label id="guessPlayer2label" for="guessPlayer2">Player 2</label>
+        <p>Remember: after filling out your bracket, make sure to bet on the player
+          that you think will win the tournament!</p>
+      </form>
+      <span class="closeButtons">
+        <a id="cancelGuessButton" class="button">Cancel</a>
+        <a id="submitGuessButton" class="button">Submit Guess</a>
       </span>
     </div>
     <div id="spinner">

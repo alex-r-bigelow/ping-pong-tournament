@@ -13,239 +13,318 @@ body {
   font-weight: 300;
   color: $textColor;
   background-color: black;
-}
-input {
-  font-family: "Wolf-Sans-Regular", sans-serif;
-  font-size: 2em;
-  background-color: $lightUiColor;
-  color: $darkUiColor;
-  border: 1px solid $Black;
-  outline: none;
-}
-input.error {
-  border: 4px solid $uiErrorColor;
-}
-input:focus {
-  border: 4px solid $uiAccentColor;
-}
-input:disabled+label {
-  /* note: this only works for labels that come immediately AFTER the input */
-  color: $darkUiColor;
-}
-h1, h2, h3, h4, h5, h6, b {
-  font-weight: 700;
-}
-b {
-  color: $uiAccentColor;
-}
-a {
-  text-decoration: none;
-  color: $linkColor;
-}
-table {
-  border-collapse: collapse;
 
-  thead {
+  input {
+    font-family: "Wolf-Sans-Regular", sans-serif;
+    font-size: 2em;
+    background-color: $lightUiColor;
+    color: $darkUiColor;
+    border: 1px solid $Black;
+    outline: none;
+  }
+  input.error {
+    border: 4px solid $uiErrorColor;
+  }
+  input:focus {
+    border: 4px solid $uiAccentColor;
+  }
+  input:disabled+label {
+    /* note: this only works for labels that come immediately AFTER the input */
+    color: $darkUiColor;
+  }
+  h1, h2, h3, h4, h5, h6, b {
+    font-weight: 700;
+  }
+  b {
+    color: $uiAccentColor;
+  }
+  a {
+    text-decoration: none;
+    color: $uiAccentColor;
+  }
+  table {
+    border-collapse: collapse;
+
+    thead {
+      td {
+        border: 1px solid $lightUiColor;
+        background-color: $darkUiColor;
+        color: $lightUiColor;
+      }
+    }
+
     td {
-      border: 1px solid $lightUiColor;
-      background-color: $darkUiColor;
-      color: $lightUiColor;
-    }
-  }
-
-  td {
-    padding: 0.25em;
-    text-align: center;
-    white-space: nowrap;
-    &.small {
-      white-space: normal;
-      font-size: 0.5em;
-      max-width: 25em;
-    }
-  }
-}
-
-#backgroundImage {
-  position: fixed;
-  bottom: -256px;
-  right: -256px;
-}
-h1 {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  left: 0px;
-  text-align: center;
-  color: $uiAccentColor;
-}
-#backgroundOverlay {
-  position: fixed;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
-  background: radial-gradient(ellipse 1024px 512px at 100% 100%, rgba(0,0,0,0.3) 0px, black 1536px);
-}
-#mainPage {
-  position: absolute;
-  top: 5em;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
-
-  #leaderBoard {
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    bottom: 0px;
-    width: calc(33.33333333% - 2em);
-    display: flex;
-    flex-direction: column;
-    padding: 1em;
-    overflow-y: scroll;
-
-    table {
-      margin-top: 1em;
-      margin-left: auto;
-      margin-right: auto;
-    }
-  }
-
-  nav {
-    position: absolute;
-    top: 2em;
-    right: 0px;
-    width: calc(66.66666666% - 2em);
-    height: 3.25em;
-
-    display: flex;
-    justify-content: center;
-
-    .button {
-      margin: 0em 0.5em;
-
-      &.selected {
-        background-color: $White;
-        color: $uiAccentColor;
+      padding: 0.25em;
+      text-align: center;
+      white-space: nowrap;
+      &.small {
+        white-space: normal;
+        font-size: 0.5em;
+        max-width: 25em;
       }
     }
   }
 
-  #mainPanel {
-    position: absolute;
-    top: 7.25em;
-    right: 0px;
-    width: calc(66.66666666% - 2em);
-    bottom: 5em;
-    padding: 1em;
+  #backgroundImage {
+    position: fixed;
+    bottom: -256px;
+    right: -256px;
   }
-}
-
-#spinner {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  bottom: 0px;
-  right: 0px;
-  background-color: rgba($lightUiColor, 0.5);
-
-  img {
-    position: absolute;
-    width: 10em;
-    height: 10em;
-    top: calc(50% - 5em);
-    left: calc(50% - 5em);
-  }
-}
-
-.selectMenu li {
-  span.name {
-    display: block;
-    width: auto;
-    height: auto;
-  }
-  span.charity {
-    display: block;
-    width: auto;
-    height: auto;
-    font-size: 0.5em;
-  }
-}
-.selectMenu.error {
-  border: 4px solid $uiErrorColor;
-}
-.waitMessage {
-  position: absolute;
-  top: calc(50% - 0.5em);
-  width: calc(100% - 2em);
-  text-align: center;
-
-  .deadline {
-    color: $uiErrorColor;
-  }
-}
-
-.messageBlurb {
-  background-color: rgba($lightUiColor, 0.75);
-  color: $Black;
-}
-
-#debug {
-  position: absolute;
-  left: 1em;
-  bottom: 6em;
-  padding: 2em 1em;
-}
-#contact {
-  position: absolute;
-  right: 1em;
-  bottom: 1em;
-  padding: 1em;
-}
-#notification {
-  position: absolute;
-  right: 1em;
-  top: 1em;
-  padding: 1em;
-}
-#touchTableHint {
-  position: absolute;
-  left: 0em;
-  top: 19em;
-  padding: 0.5em;
-}
-#scoreEntryModal {
-  position: absolute;
-  top: 10em;
-  width: 26em;
-  height: 21em;
-  left: calc(50% - 13em);
-  padding: 1em;
-
   h1 {
     position: absolute;
-    width: 100%;
-    top: 0.25em;
+    top: 0px;
+    right: 0px;
+    left: 0px;
     text-align: center;
+    color: $uiAccentColor;
   }
+  #backgroundOverlay {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    background: radial-gradient(ellipse 1024px 512px at 100% 100%, rgba(0,0,0,0.3) 0px, black 1536px);
+  }
+  #mainPage {
+    position: absolute;
+    top: 5em;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
 
-  table {
-    margin-top: 4em;
-    margin-left: auto;
-    margin-right: auto;
+    #leaderBoard {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      bottom: 10em;
+      width: calc(33.33333333% - 2em);
+      display: flex;
+      flex-direction: column;
+      padding: 1em;
+      overflow-y: scroll;
 
-    input {
-      width: 4em;
+      table {
+        margin-top: 1em;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+
+    #guessMode {
+      position: absolute;
+      left: 0px;
+      bottom: 0px;
+      height: 9em;
+      width: calc(33.33333333%);
+      text-align: center;
+
+      #toggleGuessMode {
+        position: relative;
+        top: 2em;
+        margin: auto;
+        background-color: $uiGuessColor;
+        &:hover {
+          background-color: $lightUiColor;
+        }
+        &.disabled {
+          background-color: $darkUiColor;
+          color: $midUiColor;
+        }
+      }
+    }
+
+    nav {
+      position: absolute;
+      top: 2em;
+      right: 0px;
+      width: calc(66.66666666% - 2em);
+      height: 3.25em;
+
+      display: flex;
+      justify-content: center;
+
+      .button {
+        margin: 0em 0.5em;
+
+        &.selected {
+          background-color: $White;
+          color: $uiAccentColor;
+        }
+      }
+    }
+
+    #mainPanel {
+      position: absolute;
+      top: 7.25em;
+      right: 0px;
+      width: calc(66.66666666% - 2em);
+      bottom: 5em;
+      padding: 1em;
     }
   }
 
-  #closeButtons {
+  #spinner {
     position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    background-color: rgba($lightUiColor, 0.5);
+
+    img {
+      position: absolute;
+      width: 10em;
+      height: 10em;
+      top: calc(50% - 5em);
+      left: calc(50% - 5em);
+    }
+  }
+
+  .selectMenu li {
+    span.name {
+      display: block;
+      width: auto;
+      height: auto;
+    }
+    span.charity {
+      display: block;
+      width: auto;
+      height: auto;
+      font-size: 0.5em;
+    }
+  }
+  .selectMenu.error {
+    border: 4px solid $uiErrorColor;
+  }
+  .waitMessage {
+    position: absolute;
+    top: calc(50% - 0.5em);
+    width: calc(100% - 2em);
+    text-align: center;
+
+    .deadline {
+      color: $uiErrorColor;
+    }
+  }
+
+  .messageBlurb {
+    background-color: rgba($messageBlurbBackgroundColor, 0.95);
+    border-radius: 1em;
+    color: $Black;
+  }
+
+  #debug {
+    position: absolute;
+    left: 1em;
+    bottom: 6em;
+    padding: 2em 1em;
+  }
+  #contact {
+    position: absolute;
+    right: 1em;
+    bottom: 1em;
+    padding: 1em;
+  }
+  #notification {
+    position: absolute;
+    right: 1em;
+    top: 1em;
+    padding: 1em;
+  }
+  #touchTableHint {
+    position: absolute;
+    left: 0em;
     top: 19em;
-    right: 2em;
+    padding: 0.5em;
+  }
+  #scoreEntryModal {
+    table {
+      margin-top: 4em;
+      margin-left: auto;
+      margin-right: auto;
+
+      input {
+        width: 4em;
+      }
+    }
+  }
+  #guessEntryModal {
+    form {
+      margin-top: 4em;
+      margin-left: 2em;
+      margin-right: 2em;
+      display: block;
+
+      input {
+        display: inline-block;
+      }
+
+      label {
+        display: inline-block;
+      }
+    }
+  }
+
+  .modal {
+    position: absolute;
+    top: 10em;
+    width: 26em;
+    height: 21em;
+    left: calc(50% - 13em);
+    padding: 1em;
+
+    h1 {
+      position: absolute;
+      width: 100%;
+      top: 0.25em;
+      text-align: center;
+    }
+
+    .closeButtons {
+      position: absolute;
+      top: 19em;
+      right: 2em;
+    }
+  }
+
+  path.link {
+    fill: rgba($White, 0.5);
   }
 }
+body.guessMode {
+  input:focus {
+    border: 4px solid $uiGuessColor;
+  }
+  b {
+    color: $uiGuessColor;
+  }
+  a {
+    color: $uiGuessColor;
+  }
+  h1 {
+    color: $uiGuessColor;
+  }
+  #mainPage {
+    #guessMode {
+      #toggleGuessMode {
+        background-color: $uiAccentColor;
+        &:hover {
+          background-color: $lightUiColor;
+        }
+        &.disabled {
+          background-color: $darkUiColor;
+          color: $midUiColor;
+        }
+      }
+    }
 
-path.link {
-  fill: rgba($White, 0.5);
+    nav {
+      .button {
+        &.selected {
+          color: $uiGuessColor;
+        }
+      }
+    }
+  }
 }

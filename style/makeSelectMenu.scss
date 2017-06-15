@@ -1,49 +1,75 @@
 @import './colors.scss';
 
-a.button {
-  border-radius: 1em;
-}
-a.button,
-ul.selectMenu li,
-ol.selectMenu li {
-  padding: 1em;
-  background-color: $uiAccentColor;
-  color: $lightUiColor;
-  cursor: pointer;
-  text-align: center;
-  white-space: nowrap;
-}
-a.button:hover,
-ul.selectMenu li:hover,
-ol.selectMenu li:hover {
-  background-color: $lightUiColor;
-  color: $darkUiColor;
-}
-a.button.disabled,
-a.button.disabled:hover,
-ul.selectMenu.disabled li,
-ul.selectMenu.disabled li:hover,
-ol.selectMenu.disabled li,
-ol.selectMenu.disabled li:hover {
-  background-color: $darkUiColor;
-  color: $midUiColor;
-  cursor: default;
-}
-
-ul.selectMenu,
-ol.selectMenu {
-  list-style: none;
-  padding: 0px;
-
-  li {
-    display: none;
+body {
+  a.button {
+    border-radius: 1em;
   }
-  &.expanded {
+  a.button,
+  ul.selectMenu li,
+  ol.selectMenu li {
+    padding: 1em;
+    background-color: $uiAccentColor;
+    color: $lightUiColor;
+    cursor: pointer;
+    text-align: center;
+    white-space: nowrap;
+  }
+  a.button:hover,
+  ul.selectMenu li:hover,
+  ol.selectMenu li:hover {
+    background-color: $lightUiColor;
+    color: $darkUiColor;
+  }
+  a.button.disabled,
+  a.button.disabled:hover,
+  ul.selectMenu.disabled li,
+  ul.selectMenu.disabled li:hover,
+  ol.selectMenu.disabled li,
+  ol.selectMenu.disabled li:hover {
+    background-color: $darkUiColor;
+    color: $midUiColor;
+    cursor: default;
+  }
+
+  ul.selectMenu,
+  ol.selectMenu {
+    list-style: none;
+    padding: 0px;
+
     li {
+      display: none;
+    }
+    &.expanded {
+      li {
+        display: block;
+      }
+    }
+    li.selected {
       display: block;
     }
   }
-  li.selected {
-    display: block;
+}
+body.guessMode {
+  a.button,
+  ul.selectMenu li,
+  ol.selectMenu li {
+    background-color: $uiGuessColor;
+    color: $lightUiColor;
+  }
+
+  a.button:hover,
+  ul.selectMenu li:hover,
+  ol.selectMenu li:hover {
+    background-color: $lightUiColor;
+    color: $darkUiColor;
+  }
+  a.button.disabled,
+  a.button.disabled:hover,
+  ul.selectMenu.disabled li,
+  ul.selectMenu.disabled li:hover,
+  ol.selectMenu.disabled li,
+  ol.selectMenu.disabled li:hover {
+    background-color: $darkUiColor;
+    color: $midUiColor;
   }
 }

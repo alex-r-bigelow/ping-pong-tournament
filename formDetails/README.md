@@ -1,4 +1,4 @@
-To extract these files from your google forms, view the form like a participant would, and paste this code in the console (unfortunately, we can't automatically extract this stuff due to cross-browser constraints):
+To extract these files from your google forms, preview the form, and paste this code in the console (unfortunately, we can't automatically extract this stuff due to cross-browser constraints):
 
 ```javascript
 var formElement = document.getElementsByTagName('form')[0];

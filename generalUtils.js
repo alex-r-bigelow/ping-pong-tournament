@@ -225,6 +225,10 @@ function computeWinner (match) {
 }
 
 function enterScore (player1, player2, round) {
+  if (d3.select('body').classed('guessMode')) {
+    return enterGuess(jQuery('#guesserName').val(), player1, player2, round);
+  }
+
   let modal = jQuery('#scoreEntryModal');
   modal.show();
   modal.find('input').removeClass('error');
@@ -262,6 +266,27 @@ function enterScore (player1, player2, round) {
   });
 }
 
+function enterGuess (guesser, player1, player2, round) {
+  let modal = jQuery('#guessEntryModal');
+  modal.show();
+  modal.find('input')
+    .removeClass('error')
+    .attr('name', 'Winner');
+
+  modal.find('#guessPlayer1').val(player1).prop('checked', true);
+  modal.find('#guessPlayer1label').text(player1);
+  modal.find('#guessPlayer2').val(player2);
+  modal.find('#guessPlayer2label').text(player2);
+  modal.find('#roundGuessField').text(round);
+
+  modal.find('#cancelGuessButton').on('click', () => modal.hide());
+  modal.find('#submitGuessButton').on('click', () => {
+    handleSubmission(() => {
+      return Promise.reject();
+    }, 'Guesses', modal[0]);
+  });
+}
+
 export default {
   populatePlayerLists,
   populateLeaderBoard,
@@ -271,5 +296,6 @@ export default {
   getAllMatches,
   computeWinner,
   enterScore,
+  enterGuess,
   splitName
 };

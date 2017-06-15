@@ -89,10 +89,31 @@ function updateTabs () {
   generalUtils.showSpinner(false);
 }
 
+function setupGuessMode () {
+  jQuery('#guesserName').on('keyup change', () => {
+    d3.select('#toggleGuessMode').classed('disabled', !jQuery('#guesserName').val());
+  });
+  jQuery('#toggleGuessMode').on('click', () => {
+    let body = d3.select('body');
+    let guessMode = !body.classed('guessMode');
+    body.classed('guessMode', guessMode);
+
+    if (guessMode) {
+      jQuery('#guesserName').prop('disabled', true);
+      jQuery('#toggleGuessMode').text('Stop entering predictions');
+    } else {
+      // On switching back, clear the name field for privacy
+      jQuery('#guesserName').val('').prop('disabled', false);
+      jQuery('#toggleGuessMode').text('Enter your predictions');
+    }
+  });
+}
+
 function immediateSetup () {
   setupDebugging();
   setupTouchTableSpecifics();
   getAllTables();
+  setupGuessMode();
   signupTab.setup();
   poolPlayTab.setup();
   bracketTab.setup();
